@@ -1,0 +1,228 @@
+<!-- TO RUN -->
+<!-- ollama create [model_name] -f ./modelfilepath -->
+<!-- npx http-server . -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>John</title>
+
+    <script type="module" src="https://md-block.verou.me/md-block.js"></script>
+
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        font-size: 1rem;
+        background-color: #202020;
+        color: white;
+        margin: 0;
+        height: 100vh;
+      }
+
+      .no-scrollbar {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE 10+ */
+      }
+      /* For Chrome/Safari/Webkit */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+
+      #wrapper {
+        display: grid;
+        height: 100%;
+        place-content: center;
+        grid-template-rows: max-content 1fr max-content;
+        grid-template-columns: clamp(0px, 100%, 900px);
+        box-sizing: border-box;
+        padding: 2rem;
+        gap: 1rem;
+      }
+      #wrapper.empty-chat-history {
+        grid-template-rows: max-content;
+      }
+
+      #chat-history {
+        height: 100%;
+        overflow-y: scroll;
+        scroll-behavior: smooth;
+      }
+
+      #user-input-wrapper {
+        background-color: #ffffff16;
+        border: none;
+        border-bottom: 1px solid #ffffff16;
+        border-radius: 2rem;
+        padding: 1rem 2rem;
+        box-shadow: 0 10px 20px #00000020;
+        cursor: text;
+      }
+
+      #user-input {
+        outline: none;
+        resize: none;
+        line-height: 1.2rem;
+        background: none;
+        border: none;
+        color: white;
+        font-family: inherit;
+        font-size: inherit;
+        width: 100%;
+      }
+
+      md-block {
+        display: inline-block;
+        max-width: 900px;
+      }
+
+      pre[class*="language"] {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-radius: 0.5rem;
+      }
+
+      code:not(pre code) {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 0.25rem 0.5rem;
+        display: inline-block;
+        margin: 0;
+        border-radius: 0.5rem;
+      }
+
+      .message.thinking {
+        color: #ffffff77;
+      }
+      .user.message {
+        background-color: #ffffff10;
+        color: white;
+        border-radius: 2rem;
+        padding: 0 1.5rem;
+        margin: 1rem 0;
+        width: max-content;
+        place-self: end;
+      }
+      .user.message + .user.message {
+        margin-top: calc(-1rem + 2px);
+      }
+
+      #toolbar {
+        place-self: start;
+      }
+      .option {
+        background-color: #ffffff16;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        cursor: pointer;
+        user-select: none;
+        border: 2px solid transparent;
+        transition: all 0.1s;
+      }
+      .option * {
+        pointer-events: none;
+      }
+      .option input[type="checkbox"] {
+        display: none;
+      }
+      .option.checked {
+        border-color: #ffffff77;
+      }
+      .option:not(.checked) {
+        color: #ffffff50;
+        background-color: #ffffff0d;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrapper" class="empty-chat-history">
+      <h1 id="model-name">&gt; Batman</h1>
+
+      <div id="chat-history" class="no-scrollbar"></div>
+
+      <div id="toolbar">
+        <div class="option">
+          <input
+            type="checkbox"
+            name="thinking-mode"
+            id="option__thinkingMode"
+          />
+          <label for="option__thinkingMode">💡Think</label>
+        </div>
+      </div>
+
+      <div id="user-input-wrapper">
+        <textarea
+          id="user-input"
+          class="no-scrollbar"
+          placeholder="Type here..."
+          autofocus
+          rows="1"
+          data-max-rows="5"
+        ></textarea>
+      </div>
+    </div>
+
+    <script src="./utils.js"></script>
+    <script>
+      const MODEL_NAME = "batman:latest";
+
+      const wrapper = document.getElementById("wrapper");
+      const chatHistory = document.getElementById("chat-history");
+      const inputWrapper = document.getElementById("user-input-wrapper");
+      const input = document.getElementById("user-input");
+      const thinkingMode = document.getElementById("option__thinkingMode");
+
+      fetch("http://localhost:11434/api/tags");
+
+      for (const option of document.getElementsByClassName("option")) {
+        const input = option.querySelector("input");
+        const label = option.querySelector("label");
+
+        option.addEventListener("click", () => {
+          input.checked = !input.checked;
+          option.classList.toggle("checked");
+        });
+      }
+
+      inputWrapper.addEventListener("click", () => input.focus());
+      input.addEventListener("input", function () {
+        const maxRows = parseInt(this.dataset.maxRows, 10);
+        this.rows = 1; // Reset to the initial rows to recalculate height
+        const lineHeight = parseInt(
+          window.getComputedStyle(this).lineHeight,
+          10
+        );
+        const scrollHeight = this.scrollHeight;
+        const yPadding =
+          parseInt(window.getComputedStyle(this).paddingTop.slice(0, -2), 10) +
+          parseInt(
+            window.getComputedStyle(this).paddingBottom.slice(0, -2),
+            10
+          );
+
+        const newRows = Math.min(
+          Math.floor((scrollHeight - yPadding) / lineHeight),
+          maxRows
+        );
+        this.rows = newRows;
+      });
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.altKey)
+          onUserSend({ model: MODEL_NAME, think: thinkingMode.checked });
+      });
+
+      const observer = new MutationObserver(() => {
+        if (chatLog.length === 0) {
+          wrapper.classList.add("empty-chat-history");
+        } else {
+          wrapper.classList.remove("empty-chat-history");
+        }
+
+        scrollToBottom(chatHistory);
+      });
+      observer.observe(chatHistory, { childList: true });
+    </script>
+  </body>
+</html>
