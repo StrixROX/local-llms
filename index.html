@@ -11,6 +11,27 @@
 
     <script type="module" src="https://md-block.verou.me/md-block.js"></script>
 
+    <script>
+      const BASE_URL = "http://localhost:11434";
+
+      let CURRENT_MODEL = {
+        name: "John",
+        model: "john:latest",
+      };
+
+      const MODEL_SEED = undefined;
+
+      const ENDPOINTS = {
+        CHAT: `${BASE_URL}/api/chat`,
+        LIST_MODELS: `${BASE_URL}/api/tags`,
+      };
+
+      const ROLE_CLASS_MAP = {
+        USER: "user",
+        ASSISSTANT: "assisstant",
+      };
+    </script>
+
     <style>
       body {
         font-family: "Segoe UI", sans-serif;
@@ -28,6 +49,36 @@
       /* For Chrome/Safari/Webkit */
       .no-scrollbar::-webkit-scrollbar {
         display: none;
+      }
+
+      dialog:not([open]) {
+        display: none;
+      }
+      dialog {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        border: none;
+        width: 400px;
+        border-radius: 1rem;
+        padding: 2rem;
+      }
+      dialog h3 {
+        margin: 0;
+      }
+      dialog select {
+        width: 100%;
+        font-family: inherit;
+        border-radius: 1rem;
+      }
+
+      #model-name {
+        cursor: pointer;
+        width: max-content;
+      }
+      #model-name:hover::after {
+        content: "✏️";
+        font-size: 1rem;
       }
 
       #wrapper {
@@ -136,7 +187,12 @@
   </head>
   <body>
     <div id="wrapper" class="empty-chat-history">
-      <h1 id="model-name">&gt; Batman</h1>
+      <dialog id="model-select-dialog">
+        <h3>Select model</h3>
+        <select name="model" id="model-select" autofocus></select>
+      </dialog>
+
+      <h1 id="model-name">&gt; John</h1>
 
       <div id="chat-history" class="no-scrollbar"></div>
 
@@ -164,16 +220,49 @@
     </div>
 
     <script src="./utils.js"></script>
+    <script src="./models.js"></script>
     <script>
-      const MODEL_NAME = "batman:latest";
+      const title = document.getElementById("model-name");
+      const modelSelectDialog = document.getElementById("model-select-dialog");
+      const modelSelect = document.getElementById("model-select");
 
+      title.addEventListener("click", () => {
+        fetchModels().then((models) => {
+          modelSelect.innerHTML = "";
+
+          models.forEach((model) => {
+            const option = document.createElement("option");
+            if (model.model === CURRENT_MODEL.model) option.selected = true;
+            option.value = model.model;
+            option.innerText = model.name;
+            modelSelect.appendChild(option);
+          });
+
+          modelSelectDialog.showModal();
+
+          modelSelect.addEventListener("change", () => {
+            CURRENT_MODEL = models.find(
+              (model) => model.model === modelSelect.value
+            );
+            title.innerText = `> ${CURRENT_MODEL.name}`;
+
+            modelSelectDialog.close();
+
+            while (chatLog.length > 0) {
+              chatLog.pop();
+            }
+
+            chatHistory.innerHTML = "";
+          });
+        });
+      });
+    </script>
+    <script>
       const wrapper = document.getElementById("wrapper");
       const chatHistory = document.getElementById("chat-history");
       const inputWrapper = document.getElementById("user-input-wrapper");
       const input = document.getElementById("user-input");
       const thinkingMode = document.getElementById("option__thinkingMode");
-
-      fetch("http://localhost:11434/api/tags");
 
       for (const option of document.getElementsByClassName("option")) {
         const input = option.querySelector("input");
@@ -210,7 +299,10 @@
 
       input.addEventListener("keydown", (e) => {
         if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.altKey)
-          onUserSend({ model: MODEL_NAME, think: thinkingMode.checked });
+          onUserSend({
+            model: CURRENT_MODEL.model,
+            think: thinkingMode.checked,
+          });
       });
 
       const observer = new MutationObserver(() => {

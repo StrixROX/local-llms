@@ -1,17 +1,3 @@
-const BASE_URL = "http://localhost:11434";
-
-const MODEL_SEED = undefined;
-
-const ENDPOINTS = {
-  CHAT: `${BASE_URL}/api/chat`,
-  LIST_MODELS: `${BASE_URL}/api/tags`,
-};
-
-const ROLE_CLASS_MAP = {
-  USER: "user",
-  ASSISSTANT: "assisstant",
-};
-
 const chatLog = [];
 
 function scrollToBottom(element) {
