@@ -1,0 +1,14 @@
+[
+  {
+    "name": "alfred",
+    "displayName": "Alfred",
+    "description": "Personal Assisstant",
+    "modelFile": "alfred.modelfile"
+  },
+  {
+    "name": "ed",
+    "displayName": "Ed",
+    "description": "Senior SDE",
+    "modelFile": "ed.modelfile"
+  }
+]
