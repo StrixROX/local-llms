@@ -1,3 +1,5 @@
+"use client";
+
 import { useContext } from "react";
 import { chatHistoryContext } from "./context";
 
