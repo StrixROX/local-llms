@@ -4,6 +4,9 @@
   scroll-behavior: smooth;
 }
 
+.message {
+  white-space: pre;
+}
 .message.thinking {
   color: #ffffff77;
 }

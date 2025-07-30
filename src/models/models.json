@@ -2,7 +2,7 @@
   {
     "name": "alfred",
     "displayName": "Alfred",
-    "description": "Personal Assisstant",
+    "description": "Personal Assistant",
     "modelFile": "alfred.modelfile"
   },
   {

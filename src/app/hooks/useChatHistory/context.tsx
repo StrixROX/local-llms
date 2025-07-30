@@ -1,9 +1,10 @@
 "use client";
 
-import { createContext, useReducer } from "react";
+import { generateResponse } from "@/lib/ollama";
+import { createContext, useEffect, useReducer } from "react";
 
-type Message = {
-  role: "user" | "assisstant";
+export type Message = {
+  role: "user" | "assistant";
   content: string;
   thinking?: string;
 };
@@ -15,6 +16,19 @@ type ChatHistoryContext = {
   clearHistory: () => void;
 };
 
+type ReducerType =
+  | {
+      type: "ADD_MESSAGE";
+      payload: Message;
+    }
+  | {
+      type: "UPDATE_LAST_MESSAGE";
+      payload: Message;
+    }
+  | {
+      type: "CLEAR_HISTORY";
+    };
+
 const chatHistoryContext = createContext<ChatHistoryContext>({
   chatHistory: [],
   addMessage: () => {},
@@ -24,21 +38,7 @@ const chatHistoryContext = createContext<ChatHistoryContext>({
 
 function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
   const [chatHistory, dispatch] = useReducer(
-    (
-      state: Message[],
-      action:
-        | {
-            type: "ADD_MESSAGE";
-            payload: Message;
-          }
-        | {
-            type: "UPDATE_LAST_MESSAGE";
-            payload: Message;
-          }
-        | {
-            type: "CLEAR_HISTORY";
-          }
-    ) => {
+    (state: Message[], action: ReducerType) => {
       if (action.type === "ADD_MESSAGE") {
         const { content } = action.payload;
 
@@ -50,11 +50,15 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
           (message) => message.role === role
         );
 
-        if (lastMessageIndex !== -1) {
-          state[lastMessageIndex].content = content;
+        if (lastMessageIndex === state.length - 1) {
+          return state.map((message, index) =>
+            index === lastMessageIndex
+              ? { ...message, content: message.content + content }
+              : message
+          );
+        } else {
+          return [...state, action.payload];
         }
-
-        return state;
       } else if (action.type === "CLEAR_HISTORY") {
         return [];
       } else {
@@ -71,6 +75,20 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: "UPDATE_LAST_MESSAGE", payload: message });
 
   const clearHistory = () => dispatch({ type: "CLEAR_HISTORY" });
+
+  useEffect(() => {
+    if (chatHistory.length === 0) return;
+
+    async function streamResponse() {
+      if (chatHistory.length === 0) return;
+
+      for await (const message of generateResponse(chatHistory)) {
+        updateLastMessage(message);
+      }
+    }
+
+    if (chatHistory[chatHistory.length - 1].role === "user") streamResponse();
+  }, [chatHistory]);
 
   return (
     <chatHistoryContext.Provider
