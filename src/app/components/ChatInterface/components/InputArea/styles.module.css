@@ -1,0 +1,21 @@
+.inputAreaWrapper {
+  background-color: #ffffff16;
+  border: none;
+  border-bottom: 1px solid #ffffff16;
+  border-radius: 2rem;
+  padding: 1rem 2rem;
+  box-shadow: 0 10px 20px #00000020;
+  cursor: text;
+}
+
+.inputArea {
+  outline: none;
+  resize: none;
+  line-height: 1.2rem;
+  background: none;
+  border: none;
+  color: white;
+  font-family: inherit;
+  font-size: inherit;
+  width: 100%;
+}
