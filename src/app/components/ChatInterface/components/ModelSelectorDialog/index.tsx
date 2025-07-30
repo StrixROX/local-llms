@@ -1,6 +1,8 @@
 import useModel from "@/app/hooks/useModel";
 import { useEffect, useRef } from "react";
 
+import styles from "./styles.module.css";
+
 function ModelSelectorDialog({
   open,
   onClose,
@@ -37,8 +39,13 @@ function ModelSelectorDialog({
   if (!selectedModel) return null;
 
   return (
-    <dialog ref={dialogRef} id="model-select-dialog" onClose={onClose}>
-      <h3>Select model</h3>
+    <dialog
+      ref={dialogRef}
+      id="model-select-dialog"
+      onClose={onClose}
+      className={styles.dialog}
+    >
+      <h2>Select model</h2>
       <select
         ref={dropdownRef}
         name="model"

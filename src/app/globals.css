@@ -1,3 +1,17 @@
 body {
+  font-family: "Segoe UI", sans-serif;
+  font-size: 1rem;
+  background-color: #202020;
+  color: white;
   margin: 0;
+  height: 100vh;
+}
+
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+/* For Chrome/Safari/Webkit */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
