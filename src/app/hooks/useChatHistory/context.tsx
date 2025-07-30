@@ -5,6 +5,7 @@ import { createContext, useReducer } from "react";
 type Message = {
   role: "user" | "assisstant";
   content: string;
+  thinking?: string;
 };
 
 type ChatHistoryContext = {

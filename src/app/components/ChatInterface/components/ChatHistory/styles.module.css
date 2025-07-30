@@ -1,0 +1,24 @@
+.chatHistory {
+  height: 100%;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+
+.message.thinking {
+  color: #ffffff77;
+}
+.message p {
+  margin: 0.5rem;
+}
+.user.message {
+  background-color: #ffffff10;
+  color: white;
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+  width: max-content;
+  place-self: end;
+}
+.user.message + .user.message {
+  margin-top: calc(-1rem + 2px);
+}

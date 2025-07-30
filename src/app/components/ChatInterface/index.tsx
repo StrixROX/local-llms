@@ -4,11 +4,13 @@ import { useState } from "react";
 import useChatHistory from "../../hooks/useChatHistory";
 import ModelSelectorDialog from "./components/ModelSelectorDialog";
 import useModel from "@/app/hooks/useModel";
-import Markdown from "react-markdown";
+
+import styles from "./styles.module.css";
+import ChatHistory from "./components/ChatHistory";
 
 function ChatInterface() {
   const { selectedModel } = useModel();
-  const { chatHistory, addMessage } = useChatHistory();
+  const { addMessage } = useChatHistory();
 
   const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
 
@@ -36,36 +38,37 @@ function ChatInterface() {
         onClose={() => setIsModelSelectorOpen(false)}
       />
 
-      <h1 id="model-name" onClick={() => setIsModelSelectorOpen(true)}>
-        &gt; {selectedModel?.displayName}
-      </h1>
+      <div className={styles.wrapper}>
+        <h1
+          className={styles.modelName}
+          onClick={() => setIsModelSelectorOpen(true)}
+        >
+          &gt; {selectedModel?.displayName}
+        </h1>
 
-      <div id="chat-history" className="no-scrollbar">
-        {chatHistory.map((message, index) => (
-          <Markdown key={index}>{message.content}</Markdown>
-        ))}
-      </div>
+        <ChatHistory />
 
-      <div id="user-input-wrapper">
-        <textarea
-          id="user-input"
-          className="no-scrollbar"
-          placeholder="Type here..."
-          autoFocus={true}
-          rows={1}
-          data-max-rows="5"
-          onInput={(e) => onUserInput(e.currentTarget)}
-          onKeyDown={(e) => {
-            const target = e.target as HTMLTextAreaElement;
-            if (!target || target.value.trim() === "") return;
+        <div id="user-input-wrapper">
+          <textarea
+            id="user-input"
+            className="no-scrollbar"
+            placeholder="Type here..."
+            autoFocus={true}
+            rows={1}
+            data-max-rows="5"
+            onInput={(e) => onUserInput(e.currentTarget)}
+            onKeyDown={(e) => {
+              const target = e.target as HTMLTextAreaElement;
+              if (!target || target.value.trim() === "") return;
 
-            if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.altKey) {
-              addMessage({ role: "user", content: target.value });
-              target.value = "";
-            }
-          }}
-          style={{ lineHeight: "1rem", whiteSpace: "normal" }}
-        ></textarea>
+              if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.altKey) {
+                addMessage({ role: "user", content: target.value });
+                target.value = "";
+              }
+            }}
+            style={{ lineHeight: "1rem", whiteSpace: "normal" }}
+          ></textarea>
+        </div>
       </div>
     </div>
   );
