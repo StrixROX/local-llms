@@ -7,12 +7,14 @@ body {
   height: 100vh;
 }
 
-.no-scrollbar {
+.no-scrollbar,
+pre {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE 10+ */
 }
 /* For Chrome/Safari/Webkit */
-.no-scrollbar::-webkit-scrollbar {
+.no-scrollbar::-webkit-scrollbar,
+pre::-webkit-scrollbar {
   display: none;
 }
 
@@ -21,6 +23,9 @@ pre {
   padding: 1rem;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 2rem;
+  max-width: 500px;
+  max-height: 500px;
+  overflow: auto;
 }
 
 code:not(pre code) {

@@ -2,6 +2,7 @@
 
 import { generateResponse } from "@/lib/ollama";
 import { createContext, useEffect, useReducer } from "react";
+import useModel from "../useModel";
 
 export type Message = {
   role: "user" | "assistant";
@@ -37,6 +38,8 @@ const chatHistoryContext = createContext<ChatHistoryContext>({
 });
 
 function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
+  const { selectedModel } = useModel();
+
   const [chatHistory, dispatch] = useReducer(
     (state: Message[], action: ReducerType) => {
       if (action.type === "ADD_MESSAGE") {
@@ -44,18 +47,27 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
 
         return content ? [...state, action.payload] : state;
       } else if (action.type === "UPDATE_LAST_MESSAGE") {
-        const { role, content } = action.payload;
+        const { role, content, thinking } = action.payload;
 
         const lastMessageIndex = state.findLastIndex(
           (message) => message.role === role
         );
 
         if (lastMessageIndex === state.length - 1) {
-          return state.map((message, index) =>
-            index === lastMessageIndex
-              ? { ...message, content: message.content + content }
-              : message
-          );
+          return state.map((message, index) => {
+            if (index !== lastMessageIndex) return message;
+
+            const newMessage = {
+              ...message,
+              content: message.content + content,
+            };
+
+            if (thinking) {
+              newMessage.thinking = message.thinking + thinking;
+            }
+
+            return newMessage;
+          });
         } else {
           return [...state, action.payload];
         }
@@ -80,15 +92,21 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
     if (chatHistory.length === 0) return;
 
     async function streamResponse() {
-      if (chatHistory.length === 0) return;
+      if (chatHistory.length === 0 || !selectedModel) return;
 
-      for await (const message of generateResponse(chatHistory)) {
+      const response = await generateResponse(
+        selectedModel.name,
+        chatHistory,
+        true
+      );
+
+      for await (const message of response) {
         updateLastMessage(message);
       }
     }
 
     if (chatHistory[chatHistory.length - 1].role === "user") streamResponse();
-  }, [chatHistory]);
+  }, [chatHistory, selectedModel]);
 
   return (
     <chatHistoryContext.Provider

@@ -25,13 +25,20 @@ function ChatHistory() {
       className={`no-scrollbar ${styles.chatHistory}`}
     >
       {chatHistory.map((message, index) => (
-        <div
-          className={`${styles.message} ${styles[message.role]} ${
-            message.thinking ? styles.thinking : ""
-          }`}
-          key={index}
-        >
-          <Markdown>{message.content}</Markdown>
+        <div key={index}>
+          {message.thinking && (
+            <div
+              className={`${styles.message} ${styles[message.role]} ${
+                styles.thinking
+              }`}
+            >
+              <Markdown>{message.thinking}</Markdown>
+            </div>
+          )}
+
+          <div className={`${styles.message} ${styles[message.role]}`}>
+            <Markdown>{message.content}</Markdown>
+          </div>
         </div>
       ))}
     </div>

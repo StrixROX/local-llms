@@ -5,13 +5,17 @@
 }
 
 .message {
-  white-space: pre;
+  white-space: pre-line;
 }
 .message.thinking {
   color: #ffffff77;
 }
 .message p {
   margin: 0.5rem;
+}
+.assistant.message pre {
+  border-radius: 0.5rem;
+  max-width: 100%;
 }
 .user.message {
   background-color: #ffffff10;
