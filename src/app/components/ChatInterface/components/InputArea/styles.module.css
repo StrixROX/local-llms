@@ -3,7 +3,6 @@
   border: none;
   border-bottom: 1px solid #ffffff16;
   border-radius: 2rem;
-  padding: 1rem 2rem;
   box-shadow: 0 10px 20px #00000020;
   cursor: text;
 }
@@ -18,4 +17,5 @@
   font-family: inherit;
   font-size: inherit;
   width: 100%;
+  margin: 1rem 2rem;
 }

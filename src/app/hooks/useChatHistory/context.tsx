@@ -38,7 +38,10 @@ const chatHistoryContext = createContext<ChatHistoryContext>({
 });
 
 function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
-  const { selectedModel } = useModel();
+  const {
+    selectedModel,
+    modelOptions: { think },
+  } = useModel();
 
   const [chatHistory, dispatch] = useReducer(
     (state: Message[], action: ReducerType) => {
@@ -97,7 +100,7 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
       const response = await generateResponse(
         selectedModel.name,
         chatHistory,
-        true
+        think
       );
 
       for await (const message of response) {
