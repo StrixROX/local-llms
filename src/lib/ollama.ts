@@ -35,3 +35,7 @@ export async function getModels() {
 
   return models;
 }
+
+export async function abort() {
+  ollama.abort();
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { generateResponse } from "@/lib/ollama";
+import { abort, generateResponse } from "@/lib/ollama";
 import { createContext, useEffect, useReducer, useState } from "react";
 import useModel from "../useModel";
 
@@ -125,6 +125,11 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
 
     if (chatHistory[chatHistory.length - 1].role === "user") fetchResponse();
   }, [chatHistory, selectedModel]);
+
+  useEffect(() => {
+    clearHistory();
+    abort();
+  }, [selectedModel]);
 
   return (
     <chatHistoryContext.Provider
