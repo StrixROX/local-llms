@@ -9,21 +9,34 @@ export type Model = {
   modelFile: string;
 };
 
+export type ModelOptions = {
+  think: boolean;
+};
+
 type ModelContext = {
   models: Model[];
+  modelOptions: ModelOptions;
   selectedModel: Model | null;
   setModel: (model: Model) => void;
+  setModelOptions: (options: ModelOptions) => void;
 };
 
 const modelContext = createContext<ModelContext>({
   models: [],
+  modelOptions: {
+    think: false,
+  },
   selectedModel: null,
   setModel: () => {},
+  setModelOptions: () => {},
 });
 
 function ModelProvider({ children }: { children: React.ReactNode }) {
   const [modelList, setModelList] = useState<Model[]>([]);
   const [selectedModel, setSelectedModel] = useState<Model | null>(null);
+  const [modelOptions, setModelOptions] = useState<ModelOptions>({
+    think: false,
+  });
 
   const updateSelectedModel = (model: Model) => {
     if (!model) return;
@@ -49,8 +62,10 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
     <modelContext.Provider
       value={{
         models: modelList,
+        modelOptions,
         selectedModel,
         setModel: updateSelectedModel,
+        setModelOptions,
       }}
     >
       {children}

@@ -1,4 +1,4 @@
-import useModel from "@/app/hooks/useModel";
+import { useModel } from "@/app/hooks/useModel";
 import { useEffect, useRef } from "react";
 
 import styles from "./styles.module.css";

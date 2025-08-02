@@ -8,6 +8,7 @@ import useModel from "@/app/hooks/useModel";
 import styles from "./styles.module.css";
 import ChatHistory from "./components/ChatHistory";
 import InputArea from "./components/InputArea";
+import Toolbar from "./components/Toolbar";
 
 function ChatInterface() {
   const { selectedModel } = useModel();
@@ -30,6 +31,8 @@ function ChatInterface() {
       </h1>
 
       <ChatHistory />
+
+      <Toolbar />
 
       <InputArea
         onSend={(value) => addMessage({ role: "user", content: value })}
