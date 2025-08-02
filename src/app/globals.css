@@ -18,6 +18,7 @@ pre::-webkit-scrollbar {
   display: none;
 }
 
+/* Global <Marked /> component styles */
 pre {
   margin: 0.5rem 0;
   padding: 1rem;
@@ -34,4 +35,64 @@ code:not(pre code) {
   display: inline-block;
   margin: 0;
   border-radius: 0.5rem;
+}
+
+/* Global dialog styles */
+dialog:not([open]) {
+  display: none;
+}
+dialog {
+  display: flex;
+  flex-direction: column;
+  border: none;
+  width: 400px;
+  border-radius: 1rem;
+  padding: 0 2rem;
+  background-color: #333;
+  box-shadow: 0 10px 20px #00000020;
+  border: none;
+  border-bottom: 1px solid #ffffff16;
+  border-radius: 2rem;
+  color: white;
+}
+dialog h2 {
+  margin: 2rem 0;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+dialog select {
+  width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
+  border: none;
+  border-bottom: 1px solid #ffffff16;
+  border-radius: 2rem;
+  border-radius: 2rem;
+  background-color: #ffffff16;
+  color: white;
+  text-align: center;
+  padding: 0.5rem 1rem;
+}
+dialog select option {
+  color: black;
+}
+dialog button {
+  background-color: #00000020;
+  border: none;
+  border-bottom: 1px solid #ffffff16;
+  border-radius: 2rem;
+  border-radius: 2rem;
+  padding: 1rem;
+  margin: 1rem 0;
+  color: white;
+  cursor: pointer;
+}
+dialog button:hover {
+  background-color: #00000030;
+}
+dialog button:active {
+  background-color: #00000040;
 }

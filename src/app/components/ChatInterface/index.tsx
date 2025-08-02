@@ -9,12 +9,14 @@ import styles from "./styles.module.css";
 import ChatHistory from "./components/ChatHistory";
 import InputArea from "./components/InputArea";
 import Toolbar from "./components/Toolbar";
+import Header from "./components/Header";
 
 function ChatInterface() {
   const { selectedModel } = useModel();
   const { addMessage } = useChatHistory();
 
   const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
+  const [isModelCreatorOpen, setIsModelCreatorOpen] = useState(false);
 
   return (
     <div className={styles.wrapper}>
@@ -23,15 +25,10 @@ function ChatInterface() {
         onClose={() => setIsModelSelectorOpen(false)}
       />
 
-      <h1
-        className={[
-          styles.modelName,
-          selectedModel?.status === "ONLINE" ? styles.online : styles.offline,
-        ].join(" ")}
-        onClick={() => setIsModelSelectorOpen(true)}
-      >
-        {selectedModel?.displayName}{" "}
-      </h1>
+      <Header
+        onRequestModelChange={() => setIsModelSelectorOpen(true)}
+        onRequestModelCreate={() => setIsModelCreatorOpen(true)}
+      />
 
       <ChatHistory />
 

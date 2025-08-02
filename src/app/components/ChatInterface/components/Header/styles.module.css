@@ -1,0 +1,36 @@
+.header {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 0.5rem;
+}
+.header:hover .modelAction {
+  display: block;
+  font-size: 1rem;
+  background: none;
+  cursor: pointer;
+  border: 1px solid #555;
+}
+
+.modelAction {
+  display: none;
+  padding: 0.5rem;
+  border-radius: 100%;
+  transition: all 0.1s;
+  transform: scale(0.85);
+}
+.header .modelAction:hover {
+  background-color: #ffffff16;
+}
+
+.modelName {
+  margin-right: 1rem;
+}
+.modelName.online {
+  color: white;
+}
+.modelName.offline {
+  color: #555;
+}
