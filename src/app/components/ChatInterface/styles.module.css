@@ -23,3 +23,10 @@
   left: 100%;
   transform: translate(-25%, -50%);
 }
+
+.modelName.online {
+  color: white;
+}
+.modelName.offline {
+  color: #555;
+}

@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import styles from "./styles.module.css";
+import useModel from "@/app/hooks/useModel";
+
+const MAX_ROWS = 5;
 
 function InputArea({ onSend }: { onSend: (message: string) => void }) {
-  const MAX_ROWS = 5;
-
+  const { selectedModel } = useModel();
   const [value, setValue] = useState("");
   const [textAreaRows, setTextAreaRows] = useState(1);
+
+  const isModelActive = selectedModel?.status === "ONLINE";
 
   const evaluateRowCount = (value: string) => {
     const newRows = value.split("\n").length;
@@ -18,7 +22,9 @@ function InputArea({ onSend }: { onSend: (message: string) => void }) {
   };
 
   const onEnter = () => {
-    onSend(value);
+    if (!isModelActive) return;
+
+    onSend(value.trim());
     updateValue("");
   };
 
@@ -27,13 +33,18 @@ function InputArea({ onSend }: { onSend: (message: string) => void }) {
   }, [value]);
 
   return (
-    <div className={styles.inputAreaWrapper}>
+    <div
+      className={[
+        styles.inputAreaWrapper,
+        !isModelActive ? styles.disabled : "",
+      ].join(" ")}
+    >
       <textarea
-        className={`no-scrollbar ${styles.inputArea}`}
-        placeholder="Type here..."
+        className={["no-scrollbar", styles.inputArea].join(" ")}
+        placeholder={isModelActive ? "Type here..." : "Model is offline"}
         autoFocus={true}
         rows={textAreaRows}
-        value={value}
+        value={isModelActive ? value : ""}
         onInput={(e) => updateValue(e.currentTarget.value)}
         onKeyDown={(e) => {
           const target = e.target as HTMLTextAreaElement;
@@ -45,6 +56,7 @@ function InputArea({ onSend }: { onSend: (message: string) => void }) {
           }
         }}
         style={{ lineHeight: "1rem", whiteSpace: "normal" }}
+        disabled={!isModelActive}
       ></textarea>
     </div>
   );

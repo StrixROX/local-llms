@@ -24,10 +24,13 @@ function ChatInterface() {
       />
 
       <h1
-        className={styles.modelName}
+        className={[
+          styles.modelName,
+          selectedModel?.status === "ONLINE" ? styles.online : styles.offline,
+        ].join(" ")}
         onClick={() => setIsModelSelectorOpen(true)}
       >
-        &gt; {selectedModel?.displayName}
+        {selectedModel?.displayName}{" "}
       </h1>
 
       <ChatHistory />

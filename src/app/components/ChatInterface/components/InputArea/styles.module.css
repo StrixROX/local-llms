@@ -4,7 +4,10 @@
   border-bottom: 1px solid #ffffff16;
   border-radius: 2rem;
   box-shadow: 0 10px 20px #00000020;
-  cursor: text;
+}
+.inputAreaWrapper.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .inputArea {
@@ -17,5 +20,6 @@
   font-family: inherit;
   font-size: inherit;
   width: 100%;
+  box-sizing: border-box;
   padding: 1rem 2rem;
 }

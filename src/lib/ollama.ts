@@ -15,29 +15,18 @@ export async function* generateResponse(
   chatHistory: Message[],
   think: boolean
 ): AsyncGenerator<Message, void, unknown> {
-  try {
-    const response = await ollama.chat({
-      model,
-      messages: chatHistory,
-      stream: true,
-      think,
-      options: {
-        seed: 8,
-      },
-    });
+  const response = await ollama.chat({
+    model,
+    messages: chatHistory,
+    stream: true,
+    think,
+    options: {
+      seed: 8,
+    },
+  });
 
-    for await (const message of response) {
-      yield message.message as Message;
-    }
-  } catch (err) {
-    yield {
-      role: "assistant",
-      content:
-        "An error occurred when trying to generate a response.\n" +
-        "```plain\n" +
-        err +
-        "\n```",
-    } as Message;
+  for await (const message of response) {
+    yield message.message as Message;
   }
 }
 

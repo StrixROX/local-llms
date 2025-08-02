@@ -36,8 +36,6 @@ function ModelSelectorDialog({
     }
   }, [open]);
 
-  if (!selectedModel) return null;
-
   return (
     <dialog
       ref={dialogRef}

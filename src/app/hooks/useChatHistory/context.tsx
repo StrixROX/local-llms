@@ -1,7 +1,7 @@
 "use client";
 
 import { generateResponse } from "@/lib/ollama";
-import { createContext, useEffect, useReducer } from "react";
+import { createContext, useEffect, useReducer, useState } from "react";
 import useModel from "../useModel";
 
 export type Message = {
@@ -15,6 +15,8 @@ type ChatHistoryContext = {
   addMessage: (message: Message) => void;
   updateLastMessage: (message: Message) => void;
   clearHistory: () => void;
+  isLoading: boolean;
+  error: Error | null;
 };
 
 type ReducerType =
@@ -35,6 +37,8 @@ const chatHistoryContext = createContext<ChatHistoryContext>({
   addMessage: () => {},
   updateLastMessage: () => {},
   clearHistory: () => {},
+  isLoading: false,
+  error: null,
 });
 
 function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
@@ -82,6 +86,8 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
     },
     []
   );
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   const addMessage = (message: Message) =>
     dispatch({ type: "ADD_MESSAGE", payload: message });
@@ -91,12 +97,13 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
 
   const clearHistory = () => dispatch({ type: "CLEAR_HISTORY" });
 
-  useEffect(() => {
-    if (chatHistory.length === 0) return;
+  const fetchResponse = async () => {
+    if (chatHistory.length === 0 || !selectedModel) return;
 
-    async function streamResponse() {
-      if (chatHistory.length === 0 || !selectedModel) return;
+    setIsLoading(true);
+    setError(null);
 
+    try {
       const response = await generateResponse(
         selectedModel.name,
         chatHistory,
@@ -106,14 +113,29 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
       for await (const message of response) {
         updateLastMessage(message);
       }
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    if (chatHistory[chatHistory.length - 1].role === "user") streamResponse();
+  useEffect(() => {
+    if (chatHistory.length === 0) return;
+
+    if (chatHistory[chatHistory.length - 1].role === "user") fetchResponse();
   }, [chatHistory, selectedModel]);
 
   return (
     <chatHistoryContext.Provider
-      value={{ chatHistory, addMessage, updateLastMessage, clearHistory }}
+      value={{
+        chatHistory,
+        addMessage,
+        updateLastMessage,
+        clearHistory,
+        isLoading,
+        error,
+      }}
     >
       {children}
     </chatHistoryContext.Provider>

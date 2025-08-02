@@ -44,19 +44,35 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
     if (!modelList.find((m) => m.name === model.name)) return;
 
     setSelectedModel(model);
-    localStorage.setItem("selectedModel", JSON.stringify(model));
+    localStorage.setItem("selectedModel", model.name);
+  };
+  const updateModelOptions = (options: ModelOptions) => {
+    setModelOptions(options);
+    localStorage.setItem("modelOptions", JSON.stringify(options));
   };
 
   useEffect(() => {
     fetch("/models")
       .then((response) => response.json())
+      .catch(() => [])
       .then((data: Model[]) => {
         setModelList(data);
 
-        const savedModel = localStorage.getItem("selectedModel");
+        const savedModelName = localStorage.getItem("selectedModel");
+        const model = data.find((m) => m.name === savedModelName);
 
-        setSelectedModel(savedModel ? JSON.parse(savedModel) : data[0]);
+        if (model) {
+          setSelectedModel(model);
+        } else {
+          setSelectedModel(data[0]);
+          localStorage.setItem("selectedModel", data[0].name);
+        }
       });
+
+    const savedOptions = localStorage.getItem("modelOptions");
+    if (savedOptions) {
+      setModelOptions(JSON.parse(savedOptions));
+    }
   }, []);
 
   return (
@@ -66,7 +82,7 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
         modelOptions,
         selectedModel,
         setModel: updateSelectedModel,
-        setModelOptions,
+        setModelOptions: updateModelOptions,
       }}
     >
       {children}
