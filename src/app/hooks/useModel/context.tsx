@@ -51,7 +51,7 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("modelOptions", JSON.stringify(options));
   };
 
-  useEffect(() => {
+  const fetchModelList = () => {
     fetch("/models")
       .then((response) => response.json())
       .catch(() => [])
@@ -68,11 +68,17 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
           localStorage.setItem("selectedModel", data[0].name);
         }
       });
-
+  };
+  const fetchSavedOptions = () => {
     const savedOptions = localStorage.getItem("modelOptions");
     if (savedOptions) {
       setModelOptions(JSON.parse(savedOptions));
     }
+  };
+
+  useEffect(() => {
+    fetchModelList();
+    fetchSavedOptions();
   }, []);
 
   return (

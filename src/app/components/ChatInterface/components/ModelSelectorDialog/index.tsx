@@ -43,10 +43,11 @@ function ModelSelectorDialog({
         id="model-select"
         autoFocus={true}
         defaultValue={selectedModel?.name}
+        key={selectedModel?.name}
       >
         {models.map((model) => (
           <option key={model.name} value={model.name}>
-            {model.displayName}
+            {model.displayName} {model.status === "OFFLINE" ? "(Offline)" : ""}
           </option>
         ))}
       </select>
