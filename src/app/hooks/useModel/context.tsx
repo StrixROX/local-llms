@@ -63,7 +63,7 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
 
         if (model) {
           setSelectedModel(model);
-        } else {
+        } else if (data.length > 0) {
           setSelectedModel(data[0]);
           localStorage.setItem("selectedModel", data[0].name);
         }

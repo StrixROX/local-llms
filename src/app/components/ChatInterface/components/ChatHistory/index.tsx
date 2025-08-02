@@ -3,6 +3,7 @@ import Markdown from "react-markdown";
 
 import styles from "./styles.module.css";
 import { useEffect } from "react";
+import ChatBubble from "./components/ChatBubble";
 
 function ChatHistory() {
   const { chatHistory } = useChatHistory();
@@ -25,21 +26,16 @@ function ChatHistory() {
       className={`no-scrollbar ${styles.chatHistory}`}
     >
       {chatHistory.map((message, index) => (
-        <div key={index}>
-          {message.thinking && (
-            <div
-              className={`${styles.message} ${styles[message.role]} ${
-                styles.thinking
-              }`}
-            >
-              <Markdown>{message.thinking}</Markdown>
-            </div>
-          )}
-
-          <div className={`${styles.message} ${styles[message.role]}`}>
-            <Markdown>{message.content}</Markdown>
-          </div>
-        </div>
+        <ChatBubble
+          key={index}
+          message={message}
+          isLastMessageOfRole={
+            index ===
+            chatHistory.findLastIndex(
+              (_message) => _message.role === message.role
+            )
+          }
+        />
       ))}
     </div>
   );

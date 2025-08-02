@@ -4,6 +4,11 @@
   scroll-behavior: smooth;
 }
 
+.divider {
+  margin: 1rem 0;
+  border: 1px solid #ffffff16;
+}
+
 .message {
   white-space: pre-line;
 }
@@ -19,7 +24,6 @@
 }
 .user.message {
   background-color: #ffffff10;
-  color: white;
   border-radius: 2rem;
   padding: 0.5rem 1rem;
   margin: 1rem 0;
@@ -28,4 +32,14 @@
 }
 .user.message + .user.message {
   margin-top: calc(-1rem + 2px);
+}
+
+.error.message {
+  color: white;
+}
+.error.message pre {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 0.5rem;
 }
