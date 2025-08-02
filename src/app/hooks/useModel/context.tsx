@@ -7,6 +7,7 @@ export type Model = {
   displayName: string;
   description: string;
   modelFile: string;
+  status: "ONLINE" | "OFFLINE";
 };
 
 export type ModelOptions = {

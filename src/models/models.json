@@ -1,12 +1,12 @@
 [
   {
-    "name": "alfred",
+    "name": "alfred:latest",
     "displayName": "Alfred",
     "description": "Personal Assistant",
     "modelFile": "alfred.modelfile"
   },
   {
-    "name": "ed",
+    "name": "ed:latest",
     "displayName": "Ed",
     "description": "Senior SDE",
     "modelFile": "ed.modelfile"

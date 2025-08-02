@@ -1,6 +1,7 @@
 "use server";
 
 import type { Message } from "@/app/hooks/useChatHistory/context";
+import { Model } from "@/app/hooks/useModel/context";
 import { Ollama } from "ollama";
 
 const OLLAMA_URL = process.env.OLLAMA_URL || "http://localhost:11434";
@@ -38,4 +39,10 @@ export async function* generateResponse(
         "\n```",
     } as Message;
   }
+}
+
+export async function getModels() {
+  const models = (await ollama.list()).models;
+
+  return models;
 }
