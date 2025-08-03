@@ -1,5 +1,7 @@
 "use client";
 
+import { ErrorResponse } from "@/app/api/types";
+import { NDJSONTransformStream, parseNdjsonResponse } from "@/app/utils";
 import { createContext, useEffect, useState } from "react";
 
 export type Model = {
@@ -21,6 +23,12 @@ type ModelContext = {
   setModel: (model: Model) => void;
   setModelOptions: (options: ModelOptions) => void;
   refresh: () => void;
+  createModel: (
+    model: Pick<Model, "name" | "displayName" | "description"> & {
+      baseModel: string;
+      prompt: string;
+    }
+  ) => Promise<void | AsyncGenerator<{ status: string }>>;
 };
 
 const modelContext = createContext<ModelContext>({
@@ -32,6 +40,7 @@ const modelContext = createContext<ModelContext>({
   setModel: () => {},
   setModelOptions: () => {},
   refresh: () => {},
+  createModel: () => Promise.resolve(),
 });
 
 const defaultModelOptions = {
@@ -57,8 +66,15 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
   };
 
   const fetchModelList = () => {
-    fetch("/models")
+    fetch("/api/models")
       .then((response) => response.json())
+      .then((res: { ok: true; data: Model[] } | ErrorResponse) => {
+        if (!res.ok) {
+          throw new Error(res.data.message);
+        }
+
+        return res.data;
+      })
       .catch(() => [])
       .then((data: Model[]) => {
         setModelList(data);
@@ -90,6 +106,24 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
     fetchSavedOptions();
   };
 
+  const createModel: ModelContext["createModel"] = ({
+    name,
+    displayName,
+    description,
+    prompt,
+    baseModel,
+  }) =>
+    fetch("/api/models", {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        displayName,
+        description,
+        prompt,
+        baseModel,
+      }),
+    }).then((res) => parseNdjsonResponse<{ status: string }>(res));
+
   useEffect(() => {
     refresh();
   }, []);
@@ -103,6 +137,7 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
         setModel: updateSelectedModel,
         setModelOptions: updateModelOptions,
         refresh,
+        createModel,
       }}
     >
       {children}

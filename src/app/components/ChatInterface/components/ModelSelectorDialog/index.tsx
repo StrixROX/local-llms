@@ -53,8 +53,6 @@ function ModelSelectorDialog({
     };
   }, [selectedModel]);
 
-  console.log(selectedModel, checkedModel);
-
   return (
     <dialog ref={dialogRef} id="model-select-dialog" onClose={onClose}>
       <h2>Select model</h2>

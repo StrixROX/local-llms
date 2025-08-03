@@ -1,8 +1,12 @@
 .buttonGroup {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: row;
   gap: 0.5rem;
   margin-top: 0.5rem;
+}
+
+.buttonGroup button {
+  width: 100%;
 }
 
 .inputGroup {

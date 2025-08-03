@@ -7,6 +7,7 @@ type FormState = {
   displayName: string;
   description: string;
   prompt: string;
+  baseModel: string;
 };
 
 type FormAction =
@@ -14,6 +15,7 @@ type FormAction =
   | { type: "SET_DISPLAY_NAME"; payload: string }
   | { type: "SET_DESCRIPTION"; payload: string }
   | { type: "SET_PROMPT"; payload: string }
+  | { type: "SET_BASE_MODEL"; payload: string }
   | { type: "RESET_FORM" };
 
 const initialState: FormState = {
@@ -21,6 +23,7 @@ const initialState: FormState = {
   displayName: "",
   description: "",
   prompt: "",
+  baseModel: "",
 };
 
 function formReducer(state: FormState, action: FormAction): FormState {
@@ -33,6 +36,8 @@ function formReducer(state: FormState, action: FormAction): FormState {
       return { ...state, description: action.payload };
     case "SET_PROMPT":
       return { ...state, prompt: action.payload };
+    case "SET_BASE_MODEL":
+      return { ...state, baseModel: action.payload };
     case "RESET_FORM":
       return { ...initialState };
     default:
@@ -47,33 +52,47 @@ function ModelCreatorDialog({
   open: boolean;
   onClose: () => void;
 }) {
+  const { createModel } = useModel();
   const [state, dispatch] = useReducer(formReducer, initialState);
-  const { name, displayName, description, prompt } = state;
-  const isValid = !!name && !!displayName && !!description && !!prompt;
+  const { name, displayName, description, prompt, baseModel } = state;
+  const isValid =
+    !!name && !!displayName && !!description && !!prompt && !!baseModel;
 
   const dialogRef = useRef<HTMLDialogElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   const [isCreating, setIsCreating] = useState(false);
-
-  const createModel = async (args: any) => {
-    setIsCreating(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    alert(JSON.stringify(args));
-    setIsCreating(false);
-  };
+  const [creatingMessage, setCreatingMessage] = useState("");
 
   const handleCreate = () => {
     if (isValid) {
+      setIsCreating(true);
+      setCreatingMessage("Creating...");
       createModel({
-        name,
-        displayName,
-        description,
-        prompt,
-      }).then(() => {
-        dispatch({ type: "RESET_FORM" });
-        onClose();
-      });
+        name: name.trim(),
+        displayName: displayName.trim(),
+        description: description.trim(),
+        baseModel: baseModel.trim(),
+        prompt: prompt.trim(),
+      })
+        .then(async (res) => {
+          if (!res) return;
+
+          for await (const { status } of res) {
+            setCreatingMessage(status);
+          }
+        })
+        .then(() => {
+          dispatch({ type: "RESET_FORM" });
+          setTimeout(() => {
+            setIsCreating(false);
+            onClose();
+          }, 2000);
+        })
+        .catch((e: Error) => {
+          setCreatingMessage(e.message);
+          setTimeout(() => setIsCreating(false), 2000);
+        });
     }
   };
 
@@ -97,7 +116,7 @@ function ModelCreatorDialog({
           type="text"
           value={name}
           onChange={(e) =>
-            dispatch({ type: "SET_NAME", payload: e.target.value.trim() })
+            dispatch({ type: "SET_NAME", payload: e.target.value })
           }
           placeholder="Name"
           required
@@ -113,7 +132,7 @@ function ModelCreatorDialog({
           onChange={(e) =>
             dispatch({
               type: "SET_DISPLAY_NAME",
-              payload: e.target.value.trim(),
+              payload: e.target.value,
             })
           }
           placeholder="Display Name"
@@ -140,6 +159,23 @@ function ModelCreatorDialog({
       </div>
 
       <div className={styles.inputGroup}>
+        <input
+          id="base-model-name"
+          type="text"
+          value={baseModel}
+          onChange={(e) =>
+            dispatch({
+              type: "SET_BASE_MODEL",
+              payload: e.target.value,
+            })
+          }
+          required
+          placeholder="Base Model Name"
+          className={styles.input}
+        />
+      </div>
+
+      <div className={styles.inputGroup}>
         <textarea
           id="prompt"
           value={prompt}
@@ -152,18 +188,19 @@ function ModelCreatorDialog({
           rows={5}
           required
           placeholder="System Prompt"
-          className={styles.textarea}
+          className={`${styles.textarea} no-scrollbar`}
         />
       </div>
 
       <div className={styles.buttonGroup}>
-        <button onClick={onClose}>Cancel</button>
+        {!isCreating && <button onClick={onClose}>Cancel</button>}
+
         <button
           onClick={handleCreate}
           disabled={!isValid || isCreating}
           className="primary"
         >
-          {isCreating ? "Creating..." : "Create"}
+          {isCreating ? creatingMessage : "Create"}
         </button>
       </div>
     </dialog>

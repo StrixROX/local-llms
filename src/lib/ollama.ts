@@ -16,7 +16,7 @@ export async function* generateResponse(
   chatHistory: Message[],
   think: boolean
 ): AsyncGenerator<Message, void, unknown> {
-  const response = await ollama.chat({
+  const responseStream = await ollama.chat({
     model,
     messages: chatHistory,
     stream: true,
@@ -26,7 +26,7 @@ export async function* generateResponse(
     },
   });
 
-  for await (const message of response) {
+  for await (const message of responseStream) {
     yield {
       role: message.message.role as Message["role"],
       content: message.message.content,
@@ -45,6 +45,10 @@ export async function abort() {
   ollama.abort();
 }
 
+// this function exists to parse the response from ollama.create
+// and return a new AsyncGenerator
+// especially, adding the final message of "model saved successfully"
+// would not be possible with out creating a new AsyncGenerator
 export async function* createModel(
   model: Omit<Model, "modelFile" | "status">,
   baseModel: string,
@@ -53,10 +57,8 @@ export async function* createModel(
   const modelList = await getSavedModels();
 
   if (modelList.find((m) => m.name.split(":")[0] === model.name)) {
-    throw new Error(`Model with name "${model.name}" already exists`);
+    throw new Error(`Model with name '${model.name}' already exists`);
   }
-
-  console.log("creating with", model.name, baseModel, prompt);
 
   const responseStream = await ollama.create({
     model: model.name,

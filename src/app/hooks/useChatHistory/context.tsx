@@ -1,8 +1,8 @@
 "use client";
 
-import { abort, generateResponse } from "@/lib/ollama";
 import { createContext, useEffect, useReducer, useState } from "react";
 import useModel from "../useModel";
+import { parseNdjsonResponse } from "@/app/utils";
 
 export type Message = {
   role: "user" | "assistant";
@@ -97,27 +97,37 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
 
   const clearHistory = () => dispatch({ type: "CLEAR_HISTORY" });
 
-  const fetchResponse = async () => {
+  const abort = () => fetch("/api/abort");
+
+  const fetchResponse = () => {
     if (chatHistory.length === 0 || !selectedModel) return;
 
     setIsLoading(true);
     setError(null);
 
-    try {
-      const response = await generateResponse(
-        selectedModel.name,
+    fetch(`/api/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: selectedModel.name,
         chatHistory,
-        think
-      );
-
-      for await (const message of response) {
-        updateLastMessage(message);
-      }
-    } catch (err) {
-      setError(err as Error);
-    } finally {
-      setIsLoading(false);
-    }
+        think,
+      }),
+    })
+      .then((res) => parseNdjsonResponse<Message>(res))
+      .then(async (chatGenerator) => {
+        try {
+          for await (const message of chatGenerator) {
+            updateLastMessage(message);
+          }
+        } catch (err) {
+          setError(err as Error);
+        } finally {
+          setIsLoading(false);
+        }
+      });
   };
 
   useEffect(() => {
