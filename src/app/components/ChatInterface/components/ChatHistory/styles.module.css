@@ -35,7 +35,7 @@
 }
 
 .error.message {
-  color: white;
+  color: inherit;
 }
 .error.message pre {
   box-sizing: border-box;

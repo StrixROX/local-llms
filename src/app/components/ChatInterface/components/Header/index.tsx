@@ -18,7 +18,7 @@ function Header({
           selectedModel?.status === "ONLINE" ? styles.online : styles.offline,
         ].join(" ")}
       >
-        {selectedModel?.displayName}
+        {selectedModel?.displayName ?? "No Model Selected"}
       </h1>
 
       <button

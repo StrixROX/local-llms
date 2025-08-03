@@ -1,5 +1,7 @@
 import useModel from "@/app/hooks/useModel";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import styles from "./styles.module.css";
+import { Model } from "@/app/hooks/useModel/context";
 
 function ModelSelectorDialog({
   open,
@@ -8,22 +10,20 @@ function ModelSelectorDialog({
   open: boolean;
   onClose: () => void;
 }) {
-  const { models, selectedModel, setModel } = useModel();
+  const { models, selectedModel, setModel, refresh } = useModel();
+
+  const [checkedModel, setCheckedModel] = useState<Model | null>(selectedModel);
 
   const dialogRef = useRef<HTMLDialogElement>(null);
   const dropdownRef = useRef<HTMLSelectElement>(null);
 
-  const onSelect = (modelName: string) => {
-    if (modelName === selectedModel?.name) {
-      onClose();
-      return;
-    }
+  const onSelect = () => {
+    if (!checkedModel) return;
 
-    const model = models.find((model) => model.name === modelName);
-    if (model) {
-      setModel(model);
-      onClose();
+    if (checkedModel.name !== selectedModel?.name) {
+      setModel(checkedModel);
     }
+    onClose();
   };
 
   useEffect(() => {
@@ -34,27 +34,80 @@ function ModelSelectorDialog({
     }
   }, [open]);
 
+  useEffect(() => {
+    setCheckedModel(selectedModel);
+
+    if (!dropdownRef.current) return;
+
+    if (!selectedModel) {
+      dropdownRef.current.value = "no-models";
+      return;
+    }
+
+    dropdownRef.current.value = selectedModel.name;
+    dropdownRef.current.onchange = () => {
+      setCheckedModel(
+        models.find((model) => model.name === dropdownRef.current?.value) ??
+          null
+      );
+    };
+  }, [selectedModel]);
+
+  console.log(selectedModel, checkedModel);
+
   return (
     <dialog ref={dialogRef} id="model-select-dialog" onClose={onClose}>
       <h2>Select model</h2>
-      <select
-        ref={dropdownRef}
-        name="model"
-        id="model-select"
-        autoFocus={true}
-        defaultValue={selectedModel?.name}
-        key={selectedModel?.name}
-      >
-        {models.map((model) => (
-          <option key={model.name} value={model.name}>
-            {model.displayName} {model.status === "OFFLINE" ? "(Offline)" : ""}
-          </option>
-        ))}
-      </select>
+      <div className={styles.selectContainer}>
+        <select
+          ref={dropdownRef}
+          name="model"
+          id="model-select"
+          autoFocus={true}
+        >
+          {models.map((model) => (
+            <option key={model.name} value={model.name}>
+              {model.displayName}{" "}
+              {model.status === "OFFLINE" ? "(Offline)" : ""}
+            </option>
+          ))}
 
-      <button onClick={() => onSelect(dropdownRef.current?.value ?? "")}>
-        OK
-      </button>
+          {models.length === 0 && (
+            <option key="no-models" value="no-models">
+              No models available
+            </option>
+          )}
+        </select>
+
+        <button onClick={() => refresh()} className={styles.refresh}>
+          ⟳
+        </button>
+      </div>
+
+      {checkedModel && (
+        <table className={styles.modelDetails}>
+          <tbody>
+            <tr>
+              <th>Name</th>
+              <td>{checkedModel.name}</td>
+            </tr>
+            <tr>
+              <th>Display Name</th>
+              <td>{checkedModel.displayName}</td>
+            </tr>
+            <tr>
+              <th>Description</th>
+              <td>{checkedModel.description}</td>
+            </tr>
+            <tr>
+              <th>Status</th>
+              <td>{checkedModel.status === "ONLINE" ? "Online" : "Offline"}</td>
+            </tr>
+          </tbody>
+        </table>
+      )}
+
+      <button onClick={onSelect}>OK</button>
     </dialog>
   );
 }

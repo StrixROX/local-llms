@@ -20,6 +20,7 @@ type ModelContext = {
   selectedModel: Model | null;
   setModel: (model: Model) => void;
   setModelOptions: (options: ModelOptions) => void;
+  refresh: () => void;
 };
 
 const modelContext = createContext<ModelContext>({
@@ -30,14 +31,18 @@ const modelContext = createContext<ModelContext>({
   selectedModel: null,
   setModel: () => {},
   setModelOptions: () => {},
+  refresh: () => {},
 });
+
+const defaultModelOptions = {
+  think: false,
+};
 
 function ModelProvider({ children }: { children: React.ReactNode }) {
   const [modelList, setModelList] = useState<Model[]>([]);
   const [selectedModel, setSelectedModel] = useState<Model | null>(null);
-  const [modelOptions, setModelOptions] = useState<ModelOptions>({
-    think: false,
-  });
+  const [modelOptions, setModelOptions] =
+    useState<ModelOptions>(defaultModelOptions);
 
   const updateSelectedModel = (model: Model) => {
     if (!model) return;
@@ -66,6 +71,8 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
         } else if (data.length > 0) {
           setSelectedModel(data[0]);
           localStorage.setItem("selectedModel", data[0].name);
+        } else {
+          setSelectedModel(null);
         }
       });
   };
@@ -73,12 +80,18 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
     const savedOptions = localStorage.getItem("modelOptions");
     if (savedOptions) {
       setModelOptions(JSON.parse(savedOptions));
+    } else {
+      setModelOptions(defaultModelOptions);
     }
   };
 
-  useEffect(() => {
+  const refresh = () => {
     fetchModelList();
     fetchSavedOptions();
+  };
+
+  useEffect(() => {
+    refresh();
   }, []);
 
   return (
@@ -89,6 +102,7 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
         selectedModel,
         setModel: updateSelectedModel,
         setModelOptions: updateModelOptions,
+        refresh,
       }}
     >
       {children}

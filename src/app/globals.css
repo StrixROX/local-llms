@@ -7,6 +7,11 @@ body {
   height: 100vh;
 }
 
+* {
+  box-sizing: border-box;
+  color: inherit;
+}
+
 .no-scrollbar,
 pre {
   scrollbar-width: none; /* Firefox */
@@ -45,7 +50,7 @@ dialog {
   display: flex;
   flex-direction: column;
   border: none;
-  width: 400px;
+  width: 500px;
   border-radius: 1rem;
   padding: 0 2rem;
   background-color: #333;
@@ -53,7 +58,6 @@ dialog {
   border: none;
   border-bottom: 1px solid #ffffff16;
   border-radius: 2rem;
-  color: white;
 }
 dialog h2 {
   margin: 2rem 0;
@@ -72,7 +76,6 @@ dialog select {
   border-radius: 2rem;
   border-radius: 2rem;
   background-color: #ffffff16;
-  color: white;
   text-align: center;
   padding: 0.5rem 1rem;
 }
@@ -87,7 +90,6 @@ dialog button {
   border-radius: 2rem;
   padding: 1rem;
   margin: 1rem 0;
-  color: white;
   cursor: pointer;
 }
 dialog button:hover {

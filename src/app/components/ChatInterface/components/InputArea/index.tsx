@@ -38,6 +38,7 @@ function InputArea({ onSend }: { onSend: (message: string) => void }) {
         styles.inputAreaWrapper,
         !isModelActive ? styles.disabled : "",
       ].join(" ")}
+      title={isModelActive ? "" : "Model is offline"}
     >
       <textarea
         className={["no-scrollbar", styles.inputArea].join(" ")}

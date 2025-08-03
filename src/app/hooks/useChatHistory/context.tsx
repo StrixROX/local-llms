@@ -127,7 +127,9 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
   }, [chatHistory, selectedModel]);
 
   useEffect(() => {
-    clearHistory();
+    if (selectedModel) {
+      clearHistory();
+    }
     abort();
   }, [selectedModel]);
 
