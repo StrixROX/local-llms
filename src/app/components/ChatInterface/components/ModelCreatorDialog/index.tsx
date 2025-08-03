@@ -133,6 +133,7 @@ function ModelCreatorDialog({
               payload: e.target.value,
             })
           }
+          required
           placeholder="Description"
           className={styles.input}
         />
@@ -149,6 +150,7 @@ function ModelCreatorDialog({
             })
           }
           rows={5}
+          required
           placeholder="System Prompt"
           className={styles.textarea}
         />
