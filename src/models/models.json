@@ -18,7 +18,6 @@
     "provider": "nebius",
     "displayName": "StabilityAI",
     "description": "Image Generation",
-    "modelFile": "",
     "category": "image-generation"
   }
 ]

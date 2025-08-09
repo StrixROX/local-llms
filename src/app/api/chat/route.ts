@@ -3,39 +3,30 @@ import { Message } from "@/app/hooks/useChatHistory/context";
 import { createNdjsonReadableStream } from "../utils";
 import { generateResponse, getRequestCategory } from "@/lib/ollama";
 import { generateImages } from "@/lib/huggingface";
-import type { Model } from "@/app/hooks/useModel/context";
+import { getSavedModels } from "@/lib/modelsDb";
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as {
-    model: string;
-    provider?: Model["provider"];
+    textModel: string;
+    imageModel: string;
     chatHistory: Message[];
-    think: boolean;
+    provider?: string;
+    think?: boolean;
   };
 
-  const { model, chatHistory, think, provider } = body;
+  const { textModel, imageModel, provider, chatHistory, think } = body;
 
   const lastUserMessage =
     [...chatHistory].findLast((m) => m.role === "user")?.content || "";
 
   const { type: requestType } = await getRequestCategory(lastUserMessage);
 
-  console.log(requestType);
-
   let generator;
 
   if (requestType === "image-generation") {
-    const imageGenerator = generateImages(
-      model,
-      provider || "",
-      lastUserMessage
-    );
-
-    generator = imageGenerator;
+    generator = generateImages(imageModel, provider || "", lastUserMessage);
   } else {
-    const chatGenerator = generateResponse(model, chatHistory, think);
-
-    generator = chatGenerator;
+    generator = generateResponse(textModel, chatHistory, !!think);
   }
 
   const readableStream = createNdjsonReadableStream(generator);

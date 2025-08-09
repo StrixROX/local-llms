@@ -44,7 +44,7 @@ const chatHistoryContext = createContext<ChatHistoryContext>({
 
 function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
   const {
-    selectedModel,
+    selectedModels,
     modelOptions: { think },
   } = useModel();
 
@@ -101,7 +101,7 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
   const abort = () => fetch("/api/abort");
 
   const fetchResponse = () => {
-    if (chatHistory.length === 0 || !selectedModel) return;
+    if (chatHistory.length === 0) return;
 
     setIsLoading(true);
     setError(null);
@@ -112,8 +112,9 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: selectedModel.name,
-        provider: selectedModel.provider,
+        textModel: selectedModels["text-generation"],
+        imageModel: selectedModels["image-generation"],
+        provider: selectedModels["image-generation"]?.provider,
         chatHistory,
         think,
       }),
@@ -138,14 +139,11 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
     if (chatHistory.length === 0) return;
 
     if (chatHistory[chatHistory.length - 1].role === "user") fetchResponse();
-  }, [chatHistory, selectedModel]);
+  }, [chatHistory, selectedModels]);
 
   useEffect(() => {
-    if (selectedModel) {
-      clearHistory();
-    }
     abort();
-  }, [selectedModel]);
+  }, [selectedModels]);
 
   return (
     <chatHistoryContext.Provider

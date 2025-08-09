@@ -8,11 +8,17 @@ export type Model = {
   name: string;
   displayName: string;
   description: string;
-  category: "text-generation" | "image-generation";
-  modelFile?: string;
-  provider?: string;
   status: "ONLINE" | "OFFLINE";
-};
+} & (
+  | {
+      category: "text-generation";
+      modelFile?: string;
+    }
+  | {
+      category: "image-generation";
+      provider?: string;
+    }
+);
 
 export type ModelOptions = {
   think: boolean;
@@ -21,7 +27,9 @@ export type ModelOptions = {
 type ModelContext = {
   models: Model[];
   modelOptions: ModelOptions;
-  selectedModels: Record<Model["category"], Model | null>;
+  selectedModels: {
+    [C in Model["category"]]: Extract<Model, { category: C }> | null;
+  };
   setTextModel: (model: Model) => void;
   setImageModel: (model: Model) => void;
   setModelOptions: (options: ModelOptions) => void;
@@ -33,7 +41,9 @@ type ModelContext = {
     }
   ) => Promise<void | AsyncGenerator<{ status: string }>>;
   createImageModel: (
-    model: Pick<Model, "name" | "provider" | "displayName" | "description">
+    model: Pick<Model, "name" | "displayName" | "description"> & {
+      provider: String;
+    }
   ) => Promise<void | AsyncGenerator<{ status: string }>>;
 };
 
@@ -60,9 +70,9 @@ const defaultModelOptions = {
 
 function ModelProvider({ children }: { children: React.ReactNode }) {
   const [modelList, setModelList] = useState<Model[]>([]);
-  const [selectedModels, setSelectedModels] = useState<
-    Record<Model["category"], Model | null>
-  >({
+  const [selectedModels, setSelectedModels] = useState<{
+    [C in Model["category"]]: Extract<Model, { category: C }> | null;
+  }>({
     "text-generation": null,
     "image-generation": null,
   });
@@ -116,13 +126,17 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
 
         const savedModels = {
           "text-generation":
-            data.find((m) => m.name === savedTextModelName) ??
-            data.find((model) => model.category === "text-generation") ??
-            null,
+            (data.find(
+              (m) =>
+                m.name === savedTextModelName &&
+                m.category === "text-generation"
+            ) as Extract<Model, { category: "text-generation" }>) ?? null,
           "image-generation":
-            data.find((m) => m.name === savedImageModelName) ??
-            data.find((model) => model.category === "image-generation") ??
-            null,
+            (data.find(
+              (m) =>
+                m.name === savedImageModelName &&
+                m.category === "image-generation"
+            ) as Extract<Model, { category: "image-generation" }>) ?? null,
         };
 
         setSelectedModels(savedModels);

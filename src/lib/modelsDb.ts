@@ -31,7 +31,7 @@ export const saveModel = async (
       description: model.description,
       category: model.category,
       modelFile,
-    };
+    } as Omit<Model, "status">;
   } else if (model.category === "image-generation") {
     if (!options.provider) throw new Error("No provider supplied.");
 
@@ -41,7 +41,7 @@ export const saveModel = async (
       description: model.description,
       category: model.category,
       provider: options.provider,
-    };
+    } as Omit<Model, "status">;
   }
 
   if (!modelEntry) {
