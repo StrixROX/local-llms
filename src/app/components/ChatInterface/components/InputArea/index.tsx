@@ -5,9 +5,11 @@ import useModel from "@/app/hooks/useModel";
 const MAX_ROWS = 5;
 
 function InputArea({ onSend }: { onSend: (message: string) => void }) {
-  const { selectedModel } = useModel();
+  const { selectedModels } = useModel();
   const [value, setValue] = useState("");
   const [textAreaRows, setTextAreaRows] = useState(1);
+
+  const selectedModel = selectedModels["text-generation"];
 
   const isModelActive = selectedModel?.status === "ONLINE";
 
@@ -38,11 +40,11 @@ function InputArea({ onSend }: { onSend: (message: string) => void }) {
         styles.inputAreaWrapper,
         !isModelActive ? styles.disabled : "",
       ].join(" ")}
-      title={isModelActive ? "" : "Model is offline"}
+      title={isModelActive ? "" : "Text model is offline"}
     >
       <textarea
         className={["no-scrollbar", styles.inputArea].join(" ")}
-        placeholder={isModelActive ? "Type here..." : "Model is offline"}
+        placeholder={isModelActive ? "Type here..." : "Text model is offline"}
         autoFocus={true}
         rows={textAreaRows}
         value={isModelActive ? value : ""}

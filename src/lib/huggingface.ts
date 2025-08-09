@@ -28,7 +28,7 @@ export async function* generateImages(
   }
 
   if (
-    ["nebius", "nscale", "replicate", "hf-inference", "together"].includes(
+    !["nebius", "nscale", "replicate", "hf-inference", "together"].includes(
       provider
     )
   ) {

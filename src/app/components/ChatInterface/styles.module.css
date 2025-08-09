@@ -3,7 +3,7 @@
   height: 100%;
   place-content: center;
   grid-template-rows: max-content 1fr max-content;
-  grid-template-columns: clamp(0px, 100%, 900px);
+  grid-template-columns: clamp(0px, 100%, 1200px);
   box-sizing: border-box;
   padding: 2rem;
   gap: 1rem;

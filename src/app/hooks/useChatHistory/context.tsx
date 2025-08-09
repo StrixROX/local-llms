@@ -30,6 +30,10 @@ type ReducerType =
       payload: Message;
     }
   | {
+      type: "REMOVE_LAST_MESSAGE_BY_ROLE";
+      payload: "user" | "assistant";
+    }
+  | {
       type: "CLEAR_HISTORY";
     };
 
@@ -81,6 +85,15 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
         }
       } else if (action.type === "CLEAR_HISTORY") {
         return [];
+      } else if (action.type === "REMOVE_LAST_MESSAGE_BY_ROLE") {
+        const roleToRemove = action.payload;
+        const indexToRemove = state.findLastIndex(
+          (message) => message.role === roleToRemove
+        );
+
+        if (indexToRemove === -1) return state;
+
+        return state.filter((_, index) => index !== indexToRemove);
       } else {
         return state;
       }
@@ -128,6 +141,8 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
             updateLastMessage(message);
           }
         } catch (err) {
+          // remove last message from "user" role
+          dispatch({ type: "REMOVE_LAST_MESSAGE_BY_ROLE", payload: "user" });
           setError(err as Error);
         }
       });
