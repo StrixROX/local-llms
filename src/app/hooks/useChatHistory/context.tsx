@@ -112,8 +112,8 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        textModel: selectedModels["text-generation"],
-        imageModel: selectedModels["image-generation"],
+        textModel: selectedModels["text-generation"]?.name,
+        imageModel: selectedModels["image-generation"]?.name,
         provider: selectedModels["image-generation"]?.provider,
         chatHistory,
         think,
