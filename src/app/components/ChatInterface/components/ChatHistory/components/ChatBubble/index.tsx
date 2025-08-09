@@ -3,6 +3,7 @@ import styles from "../../styles.module.css";
 import Markdown from "react-markdown";
 import useChatHistory from "@/app/hooks/useChatHistory";
 import { useEffect, useState } from "react";
+import WaitingText from "../WaitingText";
 
 function ChatBubble({
   message,
@@ -11,7 +12,7 @@ function ChatBubble({
   message: Message;
   isLastMessageOfRole: boolean;
 }) {
-  const { isLoading, error } = useChatHistory();
+  const { isLoading } = useChatHistory();
 
   const isThinking =
     isLastMessageOfRole &&
@@ -20,41 +21,17 @@ function ChatBubble({
     message?.thinking &&
     !message?.content;
 
-  const [thinkingMessage, setThinkingMessage] = useState<string>("Thinking");
+  const processImageData = (imageData: object) => {
+    const buffer = new Uint8Array(Object.values(imageData)).buffer;
+    const blob = new Blob([buffer], { type: "image/png" });
+    const blobUrl = URL.createObjectURL(blob);
 
-  useEffect(() => {
-    if (isThinking) {
-      const interval = setInterval(() => {
-        setThinkingMessage((prev) =>
-          prev === "Thinking..." ? "Thinking" : prev + "."
-        );
-      }, 500);
-
-      return () => clearInterval(interval);
-    }
-  }, [isThinking]);
-
-  if (error) {
-    return (
-      <div>
-        <div className={`${styles.message} ${styles.error}`}>
-          <Markdown>
-            {"An error occurred while fetching response.\n```plain\n" +
-              error +
-              "\n```"}
-          </Markdown>
-        </div>
-      </div>
-    );
-  }
+    return blobUrl;
+  };
 
   return (
     <div>
-      {isThinking && (
-        <div className={`${styles.message} ${styles.thinking}`}>
-          <Markdown>{`_${thinkingMessage}_`}</Markdown>
-        </div>
-      )}
+      {isThinking && <WaitingText text="Thinking" />}
 
       {message.thinking && (
         <div
@@ -67,7 +44,15 @@ function ChatBubble({
       )}
 
       <div className={`${styles.message} ${styles[message.role]}`}>
-        <Markdown>{message.content}</Markdown>
+        {message.content && <Markdown>{message.content}</Markdown>}
+        {message.images &&
+          message.images.map((imageData, index) => (
+            <img
+              className={styles.image}
+              src={processImageData(imageData)}
+              key={index}
+            />
+          ))}
       </div>
     </div>
   );

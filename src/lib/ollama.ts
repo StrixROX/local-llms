@@ -4,6 +4,7 @@ import type { Message } from "@/app/hooks/useChatHistory/context";
 import { Model } from "@/app/hooks/useModel/context";
 import { Ollama } from "ollama";
 import { getSavedModels, saveModel } from "./modelsDb";
+import requestCategorization from "./RequestCategorizationPrompt.json";
 
 const OLLAMA_URL = process.env.OLLAMA_URL || "http://localhost:11434";
 
@@ -73,4 +74,46 @@ export async function* createModel(
 
   await saveModel(model, baseModel, prompt);
   yield { status: "model saved successfully" };
+}
+
+export type RequestCategory = {
+  type: "image-generation" | "video-generation" | "text-generation";
+};
+
+export async function getRequestCategory(
+  userPrompt: string
+): Promise<RequestCategory> {
+  const model = "deepseek-r1:latest";
+  const system = requestCategorization.system as string | undefined;
+  const format = requestCategorization.format as unknown;
+
+  // Force non-streaming call to get a single response object
+  const result = await ollama.generate({
+    model,
+    prompt: userPrompt,
+    ...(system ? { system } : {}),
+    stream: false,
+    ...(format ? { format: format as any } : {}),
+  });
+
+  let parsed: unknown = (result as any).response ?? result;
+  if (typeof parsed === "string") {
+    parsed = JSON.parse(parsed);
+  }
+
+  const out = parsed as RequestCategory;
+  if (
+    !out ||
+    typeof out !== "object" ||
+    !("type" in out) ||
+    ![
+      "image-generation",
+      "video-generation",
+      "text-generation",
+    ].includes((out as RequestCategory).type)
+  ) {
+    throw new Error("Invalid categorization response from model");
+  }
+
+  return out;
 }

@@ -22,6 +22,9 @@
   border-radius: 0.5rem;
   max-width: 100%;
 }
+.assistant.message .image {
+  border-radius: 0.5rem;
+}
 .user.message {
   background-color: #ffffff10;
   border-radius: 2rem;

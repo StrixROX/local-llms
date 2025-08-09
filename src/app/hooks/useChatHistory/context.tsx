@@ -8,6 +8,7 @@ export type Message = {
   role: "user" | "assistant";
   content: string;
   thinking?: string;
+  images?: Uint8Array[];
 };
 
 type ChatHistoryContext = {
@@ -112,25 +113,28 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
       },
       body: JSON.stringify({
         model: selectedModel.name,
+        provider: selectedModel.provider,
         chatHistory,
         think,
       }),
     })
       .then((res) => parseNdjsonResponse<Message>(res))
       .then(async (chatGenerator) => {
+        setIsLoading(false);
+
         try {
           for await (const message of chatGenerator) {
             updateLastMessage(message);
           }
         } catch (err) {
           setError(err as Error);
-        } finally {
-          setIsLoading(false);
         }
       });
   };
 
   useEffect(() => {
+    setError(null);
+
     if (chatHistory.length === 0) return;
 
     if (chatHistory[chatHistory.length - 1].role === "user") fetchResponse();

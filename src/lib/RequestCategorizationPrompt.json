@@ -1,0 +1,15 @@
+{
+  "model": "deepseek-r1:latest",
+  "prompt": "USER_PROMPT",
+  "system": "Identify what kind of request the user is making. You can only choose from: image-generation, video-generation, text-generation. If request type is explicitly mentioned, just return that. Return as JSON",
+  "format": {
+    "type": "object",
+    "properties": {
+      "type": {
+        "type": "string"
+      }
+    },
+    "required": ["type"]
+  },
+  "stream": false
+}

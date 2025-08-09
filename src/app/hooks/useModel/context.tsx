@@ -9,6 +9,7 @@ export type Model = {
   displayName: string;
   description: string;
   modelFile: string;
+  provider?: "nebius" | "nscale" | "replicate" | "hf-inference" | "together";
   status: "ONLINE" | "OFFLINE";
 };
 

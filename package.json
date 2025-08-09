@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@huggingface/inference": "^4.6.1",
     "next": "15.4.4",
     "ollama": "^0.5.16",
     "react": "19.1.0",

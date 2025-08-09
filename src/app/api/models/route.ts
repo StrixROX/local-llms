@@ -14,19 +14,20 @@ export async function GET(): Promise<
     const modelList = await getSavedModels();
     const activeModels = await getModels();
 
-    const parsedModelList = modelList.map(
+    const modelListWithStatus = modelList.map(
       (modelData) =>
         ({
           ...modelData,
-          status: activeModels.find(
-            (activeModel) => activeModel.name === modelData.name
-          )
-            ? "ONLINE"
-            : "OFFLINE",
+          status:
+            activeModels.find(
+              (activeModel) => activeModel.name === modelData.name
+            ) || modelData.provider
+              ? "ONLINE"
+              : "OFFLINE",
         } as Model)
     );
 
-    return NextResponse.json({ ok: true, data: parsedModelList });
+    return NextResponse.json({ ok: true, data: modelListWithStatus });
   } catch (err) {
     return NextResponse.json(
       {
