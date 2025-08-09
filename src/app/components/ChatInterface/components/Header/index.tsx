@@ -8,18 +8,26 @@ function Header({
   onRequestModelChange: () => void;
   onRequestModelCreate: () => void;
 }) {
-  const { selectedModel } = useModel();
+  const { selectedModels } = useModel();
 
   return (
     <div className={styles.header}>
-      <h1
-        className={[
-          styles.modelName,
-          selectedModel?.status === "ONLINE" ? styles.online : styles.offline,
-        ].join(" ")}
-      >
-        {selectedModel?.displayName ?? "No Model Selected"}
-      </h1>
+      {Object.entries(selectedModels).map(
+        ([modelCategory, selectedModel], index) => (
+          <h1
+            className={[
+              styles.modelName,
+              selectedModel?.status === "ONLINE"
+                ? styles.online
+                : styles.offline,
+            ].join(" ")}
+            title={modelCategory}
+            key={`${selectedModel?.name}_${index}`}
+          >
+            {selectedModel?.displayName ?? "No Model Selected"}
+          </h1>
+        )
+      )}
 
       <button
         className={styles.modelAction}

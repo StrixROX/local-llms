@@ -22,13 +22,14 @@ function ChatInterface() {
       <ModelSelectorDialog
         open={isModelSelectorOpen}
         onClose={() => setIsModelSelectorOpen(false)}
-        key={'model-selector' + (isModelSelectorOpen ? "open" : "closed")}
+        key={"model-selector" + (isModelSelectorOpen ? "open" : "closed")}
       />
 
       <ModelCreatorDialog
         open={isModelCreatorOpen}
         onClose={() => setIsModelCreatorOpen(false)}
-        key={'model-creator' + (isModelCreatorOpen ? "open" : "closed")}
+        forModelCategory="text-generation"
+        key={"model-creator" + (isModelCreatorOpen ? "open" : "closed")}
       />
 
       <Header

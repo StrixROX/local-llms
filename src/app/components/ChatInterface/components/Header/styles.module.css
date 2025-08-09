@@ -4,7 +4,6 @@
   flex-direction: row;
   align-items: center;
   width: 100%;
-  gap: 0.5rem;
 }
 .header:hover .modelAction {
   display: block;
@@ -25,8 +24,12 @@
   background-color: #ffffff16;
 }
 
-.modelName {
+.modelName:last-of-type {
   margin-right: 1rem;
+}
+.modelName + .modelName::before {
+  content: "+";
+  margin: 0 0.5rem;
 }
 .modelName.online {
   color: inherit;

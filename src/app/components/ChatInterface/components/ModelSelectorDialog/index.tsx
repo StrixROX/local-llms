@@ -2,6 +2,7 @@ import useModel from "@/app/hooks/useModel";
 import { useEffect, useRef, useState } from "react";
 import styles from "./styles.module.css";
 import { Model } from "@/app/hooks/useModel/context";
+import Tabs from "../Tabs";
 
 function ModelSelectorDialog({
   open,
@@ -10,7 +11,21 @@ function ModelSelectorDialog({
   open: boolean;
   onClose: () => void;
 }) {
-  const { models, selectedModel, setModel, refresh } = useModel();
+  const {
+    models: allModels,
+    selectedModels,
+    setTextModel,
+    setImageModel,
+    refresh,
+  } = useModel();
+
+  const [forModelCategory, setForModelCategory] =
+    useState<Model["category"]>("image-generation");
+
+  const models = allModels.filter(
+    (model) => model.category === forModelCategory
+  );
+  let selectedModel = selectedModels[forModelCategory];
 
   const [checkedModel, setCheckedModel] = useState<Model | null>(selectedModel);
 
@@ -20,8 +35,15 @@ function ModelSelectorDialog({
   const onSelect = () => {
     if (!checkedModel) return;
 
-    if (checkedModel.name !== selectedModel?.name) {
-      setModel(checkedModel);
+    if (checkedModel.name === selectedModel?.name) {
+      onClose();
+      return;
+    }
+
+    if (forModelCategory === "text-generation") {
+      setTextModel(checkedModel);
+    } else if (forModelCategory === "image-generation") {
+      setImageModel(checkedModel);
     }
     onClose();
   };
@@ -56,6 +78,17 @@ function ModelSelectorDialog({
   return (
     <dialog ref={dialogRef} id="model-select-dialog" onClose={onClose}>
       <h2>Select model</h2>
+
+      <Tabs
+        tabData={[
+          { id: "text-generation", label: "Text" },
+          { id: "image-generation", label: "Image" },
+        ]}
+        onChange={(value) =>
+          setForModelCategory(value as "text-generation" | "image-generation")
+        }
+      />
+
       <div className={styles.selectContainer}>
         <select
           ref={dropdownRef}
@@ -89,6 +122,13 @@ function ModelSelectorDialog({
               <th>Name</th>
               <td>{checkedModel.name}</td>
             </tr>
+            {checkedModel?.category === "image-generation" &&
+              checkedModel.provider && (
+                <tr>
+                  <th>Provider</th>
+                  <td>{checkedModel.provider}</td>
+                </tr>
+              )}
             <tr>
               <th>Display Name</th>
               <td>{checkedModel.displayName}</td>

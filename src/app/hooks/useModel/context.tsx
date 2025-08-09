@@ -124,19 +124,34 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
           | string
           | undefined;
 
+        const defaultModels = {
+          "text-generation":
+            (data.find((m) => m.category === "text-generation") as Extract<
+              Model,
+              { category: "text-generation" }
+            >) ?? null,
+          "image-generation":
+            (data.find((m) => m.category === "image-generation") as Extract<
+              Model,
+              { category: "image-generation" }
+            >) ?? null,
+        };
+
         const savedModels = {
           "text-generation":
             (data.find(
               (m) =>
                 m.name === savedTextModelName &&
                 m.category === "text-generation"
-            ) as Extract<Model, { category: "text-generation" }>) ?? null,
+            ) as Extract<Model, { category: "text-generation" }>) ??
+            defaultModels["text-generation"],
           "image-generation":
             (data.find(
               (m) =>
                 m.name === savedImageModelName &&
                 m.category === "image-generation"
-            ) as Extract<Model, { category: "image-generation" }>) ?? null,
+            ) as Extract<Model, { category: "image-generation" }>) ??
+            defaultModels["image-generation"],
         };
 
         setSelectedModels(savedModels);
