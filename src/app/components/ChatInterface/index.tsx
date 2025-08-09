@@ -28,7 +28,6 @@ function ChatInterface() {
       <ModelCreatorDialog
         open={isModelCreatorOpen}
         onClose={() => setIsModelCreatorOpen(false)}
-        forModelCategory="text-generation"
         key={"model-creator" + (isModelCreatorOpen ? "open" : "closed")}
       />
 

@@ -2,6 +2,7 @@ import useModel from "@/app/hooks/useModel";
 import { useEffect, useReducer, useRef, useState } from "react";
 import styles from "./styles.module.css";
 import type { Model } from "@/app/hooks/useModel/context";
+import Tabs from "../Tabs";
 
 type FormState = {
   name: string;
@@ -54,15 +55,15 @@ function formReducer(state: FormState, action: FormAction): FormState {
 function ModelCreatorDialog({
   open,
   onClose,
-  forModelCategory,
 }: {
   open: boolean;
   onClose: () => void;
-  forModelCategory: Model["category"];
 }) {
   const { createTextModel, createImageModel } = useModel();
   const [state, dispatch] = useReducer(formReducer, initialState);
   const { name, provider, displayName, description, prompt, baseModel } = state;
+  const [forModelCategory, setForModelCategory] =
+    useState<Model["category"]>("image-generation");
 
   const validateState = () => {
     if (forModelCategory === "text-generation") {
@@ -142,6 +143,16 @@ function ModelCreatorDialog({
   return (
     <dialog ref={dialogRef} id="model-creator-dialog" onClose={onClose}>
       <h2>Create New Model</h2>
+
+      <Tabs
+        tabData={[
+          { id: "text-generation", label: "Text" },
+          { id: "image-generation", label: "Image" },
+        ]}
+        onChange={(value) =>
+          setForModelCategory(value as "text-generation" | "image-generation")
+        }
+      />
 
       <div className={styles.inputGroup}>
         <input

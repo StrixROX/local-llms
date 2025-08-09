@@ -15,9 +15,9 @@
   },
   {
     "name": "stabilityai/stable-diffusion-xl-base-1.0",
-    "provider": "nebius",
     "displayName": "StabilityAI",
     "description": "Image Generation",
-    "category": "image-generation"
+    "category": "image-generation",
+    "provider": "nebius"
   }
 ]
