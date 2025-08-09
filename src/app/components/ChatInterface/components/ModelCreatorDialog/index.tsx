@@ -1,9 +1,11 @@
 import useModel from "@/app/hooks/useModel";
 import { useEffect, useReducer, useRef, useState } from "react";
 import styles from "./styles.module.css";
+import type { Model } from "@/app/hooks/useModel/context";
 
 type FormState = {
   name: string;
+  provider: string;
   displayName: string;
   description: string;
   prompt: string;
@@ -12,6 +14,7 @@ type FormState = {
 
 type FormAction =
   | { type: "SET_NAME"; payload: string }
+  | { type: "SET_PROVIDER"; payload: string }
   | { type: "SET_DISPLAY_NAME"; payload: string }
   | { type: "SET_DESCRIPTION"; payload: string }
   | { type: "SET_PROMPT"; payload: string }
@@ -20,6 +23,7 @@ type FormAction =
 
 const initialState: FormState = {
   name: "",
+  provider: "",
   displayName: "",
   description: "",
   prompt: "",
@@ -30,6 +34,8 @@ function formReducer(state: FormState, action: FormAction): FormState {
   switch (action.type) {
     case "SET_NAME":
       return { ...state, name: action.payload };
+    case "SET_PROVIDER":
+      return { ...state, provider: action.payload };
     case "SET_DISPLAY_NAME":
       return { ...state, displayName: action.payload };
     case "SET_DESCRIPTION":
@@ -48,33 +54,62 @@ function formReducer(state: FormState, action: FormAction): FormState {
 function ModelCreatorDialog({
   open,
   onClose,
+  forModelCategory,
 }: {
   open: boolean;
   onClose: () => void;
+  forModelCategory: Model["category"];
 }) {
-  const { createModel } = useModel();
+  const { createTextModel, createImageModel } = useModel();
   const [state, dispatch] = useReducer(formReducer, initialState);
-  const { name, displayName, description, prompt, baseModel } = state;
-  const isValid =
-    !!name && !!displayName && !!description && !!prompt && !!baseModel;
+  const { name, provider, displayName, description, prompt, baseModel } = state;
+
+  const validateState = () => {
+    if (forModelCategory === "text-generation") {
+      return (
+        !!name && !!displayName && !!description && !!prompt && !!baseModel
+      );
+    } else if (forModelCategory === "image-generation") {
+      return !!name && !!displayName && !!description && !!provider;
+    } else {
+      return false;
+    }
+  };
+
+  const isValid = validateState();
 
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const [isCreating, setIsCreating] = useState(false);
   const [creatingMessage, setCreatingMessage] = useState("");
 
-  const handleCreate = () => {
-    if (isValid) {
-      setIsCreating(true);
-      setCreatingMessage("Creating...");
-      createModel({
+  const createModel = () => {
+    if (forModelCategory === "text-generation") {
+      return createTextModel({
         name: name.trim(),
         displayName: displayName.trim(),
         description: description.trim(),
         baseModel: baseModel.trim(),
         prompt: prompt.trim(),
-      })
+      });
+    } else if (forModelCategory === "image-generation") {
+      return createImageModel({
+        name: name.trim(),
+        provider: provider.trim(),
+        displayName: displayName.trim(),
+        description: description.trim(),
+      });
+    } else {
+      return Promise.resolve();
+    }
+  };
+
+  const handleCreate = () => {
+    if (isValid) {
+      setIsCreating(true);
+      setCreatingMessage("Creating...");
+
+      createModel()
         .then(async (res) => {
           if (!res) return;
 
@@ -110,7 +145,6 @@ function ModelCreatorDialog({
 
       <div className={styles.inputGroup}>
         <input
-          ref={nameInputRef}
           autoFocus={true}
           id="model-name"
           type="text"
@@ -123,6 +157,23 @@ function ModelCreatorDialog({
           className={styles.input}
         />
       </div>
+
+      {forModelCategory === "image-generation" && (
+        <div className={styles.inputGroup}>
+          <input
+            autoFocus={true}
+            id="model-provider"
+            type="text"
+            value={provider}
+            onChange={(e) =>
+              dispatch({ type: "SET_PROVIDER", payload: e.target.value })
+            }
+            placeholder="Provider"
+            required
+            className={styles.input}
+          />
+        </div>
+      )}
 
       <div className={styles.inputGroup}>
         <input
@@ -158,39 +209,43 @@ function ModelCreatorDialog({
         />
       </div>
 
-      <div className={styles.inputGroup}>
-        <input
-          id="base-model-name"
-          type="text"
-          value={baseModel}
-          onChange={(e) =>
-            dispatch({
-              type: "SET_BASE_MODEL",
-              payload: e.target.value,
-            })
-          }
-          required
-          placeholder="Base Model Name"
-          className={styles.input}
-        />
-      </div>
+      {forModelCategory === "text-generation" && (
+        <div className={styles.inputGroup}>
+          <input
+            id="base-model-name"
+            type="text"
+            value={baseModel}
+            onChange={(e) =>
+              dispatch({
+                type: "SET_BASE_MODEL",
+                payload: e.target.value,
+              })
+            }
+            required
+            placeholder="Base Model Name"
+            className={styles.input}
+          />
+        </div>
+      )}
 
-      <div className={styles.inputGroup}>
-        <textarea
-          id="prompt"
-          value={prompt}
-          onChange={(e) =>
-            dispatch({
-              type: "SET_PROMPT",
-              payload: e.target.value,
-            })
-          }
-          rows={5}
-          required
-          placeholder="System Prompt"
-          className={`${styles.textarea} no-scrollbar`}
-        />
-      </div>
+      {forModelCategory === "text-generation" && (
+        <div className={styles.inputGroup}>
+          <textarea
+            id="prompt"
+            value={prompt}
+            onChange={(e) =>
+              dispatch({
+                type: "SET_PROMPT",
+                payload: e.target.value,
+              })
+            }
+            rows={5}
+            required
+            placeholder="System Prompt"
+            className={`${styles.textarea} no-scrollbar`}
+          />
+        </div>
+      )}
 
       <div className={styles.buttonGroup}>
         {!isCreating && <button onClick={onClose}>Cancel</button>}

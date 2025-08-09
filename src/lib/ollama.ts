@@ -50,8 +50,10 @@ export async function abort() {
 // and return a new AsyncGenerator
 // especially, adding the final message of "model saved successfully"
 // would not be possible with out creating a new AsyncGenerator
-export async function* createModel(
-  model: Omit<Model, "modelFile" | "status">,
+export async function* createTextModel(
+  model: Pick<Model, "name" | "displayName" | "description"> & {
+    category: "text-generation";
+  },
   baseModel: string,
   prompt: string
 ): AsyncGenerator<{ status: string }, void, unknown> {
@@ -72,7 +74,7 @@ export async function* createModel(
     yield { status: response.status };
   }
 
-  await saveModel(model, baseModel, prompt);
+  await saveModel(model, { baseModel, prompt });
   yield { status: "model saved successfully" };
 }
 
@@ -106,11 +108,9 @@ export async function getRequestCategory(
     !out ||
     typeof out !== "object" ||
     !("type" in out) ||
-    ![
-      "image-generation",
-      "video-generation",
-      "text-generation",
-    ].includes((out as RequestCategory).type)
+    !["image-generation", "video-generation", "text-generation"].includes(
+      (out as RequestCategory).type
+    )
   ) {
     throw new Error("Invalid categorization response from model");
   }

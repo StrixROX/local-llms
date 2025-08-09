@@ -20,12 +20,16 @@ export async function POST(req: NextRequest) {
 
   const { type: requestType } = await getRequestCategory(lastUserMessage);
 
-  console.log(requestType)
+  console.log(requestType);
 
   let generator;
 
   if (requestType === "image-generation") {
-    const imageGenerator = generateImages(model, provider, lastUserMessage);
+    const imageGenerator = generateImages(
+      model,
+      provider || "",
+      lastUserMessage
+    );
 
     generator = imageGenerator;
   } else {

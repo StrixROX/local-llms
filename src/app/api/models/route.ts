@@ -1,11 +1,12 @@
 "use server";
 
 import { NextRequest, NextResponse } from "next/server";
-import { createModel, getModels } from "@/lib/ollama";
+import { createTextModel, getModels } from "@/lib/ollama";
 import { Model } from "../../hooks/useModel/context";
 import { getSavedModels } from "@/lib/modelsDb";
 import { createNdjsonReadableStream } from "../utils";
 import { ErrorResponse } from "../types";
+import { createImageModel } from "@/lib/huggingface";
 
 export async function GET(): Promise<
   NextResponse<{ ok: true; data: Model[] } | ErrorResponse>
@@ -42,18 +43,37 @@ export async function GET(): Promise<
 export async function POST(
   req: NextRequest
 ): Promise<NextResponse<ReadableStream<string>>> {
-  const body = (await req.json()) as Omit<Model, "modelFile" | "status"> & {
-    baseModel: string;
-    prompt: string;
-  };
+  const body = (await req.json()) as Pick<
+    Model,
+    "name" | "displayName" | "description"
+  > &
+    (
+      | {
+          category: "text-generation";
+          baseModel: string;
+          prompt: string;
+        }
+      | {
+          category: "image-generation";
+          provider: string;
+        }
+    );
 
-  const { baseModel, prompt, ...modelData } = body;
+  let creationStatusGenerator;
 
-  const creationStatusGenerator = createModel(
-    modelData,
-    body.baseModel,
-    body.prompt
-  );
+  if (body.category === "image-generation") {
+    const { provider, ...modelData } = body;
+
+    creationStatusGenerator = createImageModel(modelData, provider);
+  } else {
+    const { baseModel, prompt, ...modelData } = body;
+
+    creationStatusGenerator = createTextModel(
+      modelData,
+      body.baseModel,
+      body.prompt
+    );
+  }
 
   const readableStream = createNdjsonReadableStream(creationStatusGenerator);
 
