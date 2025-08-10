@@ -3,7 +3,7 @@ import { Message } from "@/app/hooks/useChatHistory/context";
 import { createNdjsonReadableStream } from "../utils";
 import { generateResponse, getRequestCategory } from "@/lib/ollama";
 import { generateImages } from "@/lib/huggingface";
-import { getSavedModels } from "@/lib/modelsDb";
+
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as {

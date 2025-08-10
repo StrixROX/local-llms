@@ -2,7 +2,7 @@ import { Message } from "@/app/hooks/useChatHistory/context";
 import styles from "../../styles.module.css";
 import Markdown from "react-markdown";
 import useChatHistory from "@/app/hooks/useChatHistory";
-import { useEffect, useState } from "react";
+
 import WaitingText from "../WaitingText";
 
 function ChatBubble({
@@ -51,6 +51,7 @@ function ChatBubble({
               className={styles.image}
               src={processImageData(imageData)}
               key={index}
+              alt={`Generated image ${index + 1}`}
             />
           ))}
       </div>

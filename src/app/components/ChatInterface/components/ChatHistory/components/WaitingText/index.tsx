@@ -8,14 +8,12 @@ type WaitingTextProps = {
   text: string;
   intervalMs?: number;
   maxDots?: number;
-  className?: string;
 };
 
 export default function WaitingText({
   text,
   intervalMs = 500,
   maxDots = 3,
-  className,
 }: WaitingTextProps) {
   const [tick, setTick] = useState(0);
   const timerRef = useRef<number | null>(null);

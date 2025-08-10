@@ -95,10 +95,10 @@ export async function getRequestCategory(
     prompt: userPrompt,
     ...(system ? { system } : {}),
     stream: false,
-    ...(format ? { format: format as any } : {}),
+    ...(format ? { format: format as string | object } : {}),
   });
 
-  let parsed: unknown = (result as any).response ?? result;
+  let parsed: unknown = (result as { response?: unknown }).response ?? result;
   if (typeof parsed === "string") {
     parsed = JSON.parse(parsed);
   }

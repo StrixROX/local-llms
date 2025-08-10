@@ -1,8 +1,8 @@
 "use client";
 
 import { ErrorResponse } from "@/app/api/types";
-import { NDJSONTransformStream, parseNdjsonResponse } from "@/app/utils";
-import { createContext, useEffect, useState } from "react";
+import { parseNdjsonResponse } from "@/app/utils";
+import { createContext, useCallback, useEffect, useState } from "react";
 
 export type Model = {
   name: string;
@@ -42,7 +42,7 @@ type ModelContext = {
   ) => Promise<void | AsyncGenerator<{ status: string }>>;
   createImageModel: (
     model: Pick<Model, "name" | "displayName" | "description"> & {
-      provider: String;
+      provider: string;
     }
   ) => Promise<void | AsyncGenerator<{ status: string }>>;
 };
@@ -94,7 +94,7 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("modelOptions", JSON.stringify(options));
   };
 
-  const fetchModelList = () => {
+  const fetchModelList = useCallback(() => {
     fetch("/api/models")
       .then((response) => response.json())
       .then((res: { ok: true; data: Model[] } | ErrorResponse) => {
@@ -163,20 +163,20 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
           })
         );
       });
-  };
-  const fetchSavedOptions = () => {
+  }, []);
+  const fetchSavedOptions = useCallback(() => {
     const savedOptions = localStorage.getItem("modelOptions");
     if (savedOptions) {
       setModelOptions(JSON.parse(savedOptions));
     } else {
       setModelOptions(defaultModelOptions);
     }
-  };
+  }, []);
 
-  const refresh = () => {
+  const refresh = useCallback(() => {
     fetchModelList();
     fetchSavedOptions();
-  };
+  }, [fetchModelList, fetchSavedOptions]);
 
   const createTextModel: ModelContext["createTextModel"] = ({
     name,
@@ -216,7 +216,7 @@ function ModelProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
 
   return (
     <modelContext.Provider

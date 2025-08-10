@@ -25,7 +25,7 @@ function ModelSelectorDialog({
   const models = allModels.filter(
     (model) => model.category === forModelCategory
   );
-  let selectedModel = selectedModels[forModelCategory];
+  const selectedModel = selectedModels[forModelCategory];
 
   const [checkedModel, setCheckedModel] = useState<Model | null>(selectedModel);
 
@@ -73,7 +73,7 @@ function ModelSelectorDialog({
           null
       );
     };
-  }, [selectedModel]);
+  }, [selectedModel, models]);
 
   return (
     <dialog ref={dialogRef} id="model-select-dialog" onClose={onClose}>

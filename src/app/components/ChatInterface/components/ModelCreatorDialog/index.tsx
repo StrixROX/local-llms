@@ -172,7 +172,6 @@ function ModelCreatorDialog({
       {forModelCategory === "image-generation" && (
         <div className={styles.inputGroup}>
           <input
-            autoFocus={true}
             id="model-provider"
             type="text"
             value={provider}

@@ -8,8 +8,6 @@ import { createNdjsonReadableStream } from "../utils";
 import { ErrorResponse } from "../types";
 import { createImageModel } from "@/lib/huggingface";
 
-console.log(process.env.HF_TOKEN)
-
 export async function GET(): Promise<
   NextResponse<{ ok: true; data: Model[] } | ErrorResponse>
 > {
@@ -77,8 +75,8 @@ export async function POST(
 
     creationStatusGenerator = createTextModel(
       modelData,
-      body.baseModel,
-      body.prompt
+      baseModel,
+      prompt
     );
   }
 

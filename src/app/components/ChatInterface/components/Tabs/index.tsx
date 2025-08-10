@@ -12,7 +12,7 @@ function Tabs({
 
   useEffect(() => {
     onChange(value);
-  }, [value]);
+  }, [value, onChange]);
 
   return (
     <div className={styles.tabsWrapper}>
