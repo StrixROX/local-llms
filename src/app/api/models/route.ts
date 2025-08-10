@@ -8,6 +8,8 @@ import { createNdjsonReadableStream } from "../utils";
 import { ErrorResponse } from "../types";
 import { createImageModel } from "@/lib/huggingface";
 
+console.log(process.env.HF_TOKEN)
+
 export async function GET(): Promise<
   NextResponse<{ ok: true; data: Model[] } | ErrorResponse>
 > {
@@ -16,16 +18,21 @@ export async function GET(): Promise<
     const activeModels = await getModels();
 
     const modelListWithStatus = modelList.map(
-      (modelData) =>
-        ({
+      (modelData) => {
+        const isActive = activeModels.find(
+          (activeModel) => activeModel.name === modelData.name
+        );
+        
+        const status: "ONLINE" | "OFFLINE" = isActive || 
+          (modelData.category === "image-generation" && "provider" in modelData && modelData.provider)
+          ? "ONLINE"
+          : "OFFLINE";
+        
+        return {
           ...modelData,
-          status:
-            activeModels.find(
-              (activeModel) => activeModel.name === modelData.name
-            ) || modelData.provider
-              ? "ONLINE"
-              : "OFFLINE",
-        } as Model)
+          status,
+        } as Model;
+      }
     );
 
     return NextResponse.json({ ok: true, data: modelListWithStatus });
