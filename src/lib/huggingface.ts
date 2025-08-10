@@ -1,6 +1,7 @@
 "use server";
 import "server-only";
 
+import "@/lib/env";
 import type { Message } from "@/app/hooks/useChatHistory/context";
 import { InferenceClient } from "@huggingface/inference";
 import { saveModel } from "./modelsDb";

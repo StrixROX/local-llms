@@ -15,23 +15,24 @@ export async function GET(): Promise<
     const modelList = await getSavedModels();
     const activeModels = await getModels();
 
-    const modelListWithStatus = modelList.map(
-      (modelData) => {
-        const isActive = activeModels.find(
-          (activeModel) => activeModel.name === modelData.name
-        );
-        
-        const status: "ONLINE" | "OFFLINE" = isActive || 
-          (modelData.category === "image-generation" && "provider" in modelData && modelData.provider)
+    const modelListWithStatus = modelList.map((modelData) => {
+      const isActive = activeModels.find(
+        (activeModel) => activeModel.name === modelData.name
+      );
+
+      const status: "ONLINE" | "OFFLINE" =
+        isActive ||
+        (modelData.category === "image-generation" &&
+          "provider" in modelData &&
+          modelData.provider)
           ? "ONLINE"
           : "OFFLINE";
-        
-        return {
-          ...modelData,
-          status,
-        } as Model;
-      }
-    );
+
+      return {
+        ...modelData,
+        status,
+      } as Model;
+    });
 
     return NextResponse.json({ ok: true, data: modelListWithStatus });
   } catch (err) {
@@ -73,11 +74,7 @@ export async function POST(
   } else {
     const { baseModel, prompt, ...modelData } = body;
 
-    creationStatusGenerator = createTextModel(
-      modelData,
-      baseModel,
-      prompt
-    );
+    creationStatusGenerator = createTextModel(modelData, baseModel, prompt);
   }
 
   const readableStream = createNdjsonReadableStream(creationStatusGenerator);

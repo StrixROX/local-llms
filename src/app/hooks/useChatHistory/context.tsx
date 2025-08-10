@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useCallback, useEffect, useReducer, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import useModel from "../useModel";
 import { parseNdjsonResponse } from "@/app/utils";
 
@@ -106,8 +112,11 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
   const addMessage = (message: Message) =>
     dispatch({ type: "ADD_MESSAGE", payload: message });
 
-  const updateLastMessage = useCallback((message: Message) =>
-    dispatch({ type: "UPDATE_LAST_MESSAGE", payload: message }), []);
+  const updateLastMessage = useCallback(
+    (message: Message) =>
+      dispatch({ type: "UPDATE_LAST_MESSAGE", payload: message }),
+    []
+  );
 
   const clearHistory = () => dispatch({ type: "CLEAR_HISTORY" });
 
@@ -149,11 +158,12 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
   }, [chatHistory, selectedModels, think, updateLastMessage]);
 
   useEffect(() => {
-    setError(null);
-
     if (chatHistory.length === 0) return;
 
-    if (chatHistory[chatHistory.length - 1].role === "user") fetchResponse();
+    if (chatHistory[chatHistory.length - 1].role === "user") {
+      setError(null);
+      fetchResponse();
+    }
   }, [chatHistory, selectedModels, fetchResponse]);
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 "use server";
 
+import "@/lib/env";
 import type { Message } from "@/app/hooks/useChatHistory/context";
 import { Model } from "@/app/hooks/useModel/context";
 import { Ollama } from "ollama";
