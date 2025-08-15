@@ -165,24 +165,18 @@ npm run dev
 
 ## 🔮 Future Scope
 
-### **🚀 Planned Features**
-- **Multi-modal AI**: Support for audio, video, and document processing
-- **Model Fine-tuning**: Customize models for specific use cases
-- **Plugin System**: Extensible architecture for third-party integrations
-- **Mobile App**: Native mobile applications for iOS and Android
-- **Cloud Sync**: Optional cloud backup and synchronization
 
-### **🔧 Technical Improvements**
-- **Performance Optimization**: Faster inference and response times
-- **Memory Management**: Efficient handling of large conversations
-- **Model Compression**: Smaller, faster models without quality loss
-- **GPU Acceleration**: Enhanced performance with CUDA support
+### **🗄️ Database Integration**
+- **Replace JSON Storage**: Integrate PostgreSQL/MongoDB for model data instead of basic JSON files
+- **Persistent Storage**: Store model configurations, chat history, and user preferences in database
+- **Data Relationships**: Proper relational structure for models, conversations, and settings
+- **Backup & Recovery**: Automated database backups and data recovery mechanisms
 
-### **🌐 Community Features**
-- **Model Marketplace**: Share and discover custom AI models
-- **Collaborative Training**: Community-driven model improvement
-- **Plugin Ecosystem**: Rich ecosystem of AI-powered tools
-- **Documentation Hub**: Comprehensive guides and tutorials
+### **🌍 Online Deployment**
+- **Public Hosting**: Deploy the application online for public access
+- **Cloud Infrastructure**: Set up on AWS, Google Cloud, or Azure with proper scaling
+- **Remote Ollama**: Configure remote Ollama server for online deployment
+- **Load Balancing**: Handle multiple concurrent users and requests efficiently
 
 ---
 
