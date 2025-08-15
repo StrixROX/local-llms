@@ -120,8 +120,6 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
 
   const clearHistory = () => dispatch({ type: "CLEAR_HISTORY" });
 
-  const abort = () => fetch("/api/abort");
-
   const fetchResponse = useCallback(() => {
     if (chatHistory.length === 0) return;
 
