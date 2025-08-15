@@ -166,10 +166,6 @@ function ChatHistoryProvider({ children }: { children: React.ReactNode }) {
     }
   }, [chatHistory, selectedModels, fetchResponse]);
 
-  useEffect(() => {
-    abort();
-  }, [selectedModels]);
-
   return (
     <chatHistoryContext.Provider
       value={{
