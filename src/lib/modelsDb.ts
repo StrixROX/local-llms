@@ -22,7 +22,7 @@ export const saveModel = async (
 
     await fs.writeFile(
       modelFile,
-      `FROM ${options.baseModel}\n\nSYSTEM """\n${prompt}\n"""`
+      `FROM ${options.baseModel}\n\nSYSTEM """\n${options.prompt}\n"""`
     );
 
     modelEntry = {
