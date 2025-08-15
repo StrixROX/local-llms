@@ -1,0 +1,39 @@
+.header {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+.header:hover .modelAction {
+  display: block;
+  font-size: 1rem;
+  background: none;
+  cursor: pointer;
+  border: 1px solid #555;
+}
+
+.modelAction {
+  display: none;
+  padding: 0.5rem;
+  border-radius: 100%;
+  transition: all 0.1s;
+  transform: scale(0.85);
+}
+.header .modelAction:hover {
+  background-color: #ffffff16;
+}
+
+.modelName:last-of-type {
+  margin-right: 1rem;
+}
+.modelName + .modelName::before {
+  content: "+";
+  margin: 0 0.5rem;
+}
+.modelName.online {
+  color: inherit;
+}
+.modelName.offline {
+  color: #555;
+}

@@ -1,0 +1,25 @@
+.toolbar {
+  place-self: start;
+}
+.toolbar .option {
+  background-color: #ffffff16;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  user-select: none;
+  border: 2px solid transparent;
+  transition: all 0.1s;
+}
+.toolbar .option * {
+  pointer-events: none;
+}
+.toolbar .option input[type="checkbox"] {
+  display: none;
+}
+.toolbar .option.checked {
+  border-color: #ffffff77;
+}
+.toolbar .option:not(.checked) {
+  color: #ffffff50;
+  background-color: #ffffff0d;
+}

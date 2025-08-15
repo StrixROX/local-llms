@@ -1,0 +1,23 @@
+[
+  {
+    "name": "alfred:latest",
+    "displayName": "Alfred",
+    "description": "Personal Assistant",
+    "modelFile": "alfred.modelfile",
+    "category": "text-generation"
+  },
+  {
+    "name": "ed:latest",
+    "displayName": "Ed",
+    "description": "Senior SDE",
+    "modelFile": "ed.modelfile",
+    "category": "text-generation"
+  },
+  {
+    "name": "stabilityai/stable-diffusion-xl-base-1.0",
+    "displayName": "StabilityAI",
+    "description": "Image Generation",
+    "category": "image-generation",
+    "provider": "nebius"
+  }
+]

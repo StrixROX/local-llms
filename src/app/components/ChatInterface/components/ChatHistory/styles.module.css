@@ -1,0 +1,48 @@
+.chatHistory {
+  height: 100%;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+
+.divider {
+  margin: 1rem 0;
+  border: 1px solid #ffffff16;
+}
+
+.message {
+  white-space: pre-line;
+}
+.message.thinking {
+  color: #ffffff77;
+}
+.message p {
+  margin: 0.5rem;
+}
+.assistant.message pre {
+  border-radius: 0.5rem;
+  max-width: 100%;
+}
+.assistant.message .image {
+  border-radius: 0.5rem;
+}
+.user.message {
+  background-color: #ffffff10;
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+  width: max-content;
+  place-self: end;
+}
+.user.message + .user.message {
+  margin-top: calc(-1rem + 2px);
+}
+
+.error.message {
+  color: inherit;
+}
+.error.message pre {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 0.5rem;
+}
