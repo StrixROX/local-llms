@@ -46,7 +46,8 @@ export async function* generateImages(
         | "nscale"
         | "replicate"
         | "hf-inference"
-        | "together",
+        | "together"
+        | "fal-ai",
       model: modelName,
       inputs: prompt,
     },

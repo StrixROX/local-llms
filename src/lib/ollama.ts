@@ -80,7 +80,7 @@ export async function* createTextModel(
 }
 
 export type RequestCategory = {
-  type: "image-generation" | "video-generation" | "text-generation";
+  requestType: "image-generation" | "video-generation" | "text-generation";
 };
 
 export async function getRequestCategory(
@@ -100,12 +100,12 @@ export async function getRequestCategory(
   if (
     !out ||
     typeof out !== "object" ||
-    !("type" in out) ||
+    !("requestType" in out) ||
     !["image-generation", "video-generation", "text-generation"].includes(
-      (out as RequestCategory).type
+      (out as RequestCategory).requestType
     )
   ) {
-    throw new Error("Invalid categorization response from model");
+    throw new Error(`Invalid categorization response from model: ${JSON.stringify(out)}`);
   }
 
   return out;

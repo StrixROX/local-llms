@@ -1,5 +1,5 @@
 import useModel from "@/app/hooks/useModel";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import styles from "./styles.module.css";
 import { Model } from "@/app/hooks/useModel/context";
 import Tabs from "../Tabs";
@@ -27,7 +27,7 @@ function ModelSelectorDialog({
   );
   const selectedModel = selectedModels[forModelCategory];
 
-  const [checkedModel, setCheckedModel] = useState<Model | null>(selectedModel);
+  const [checkedModel, setCheckedModel] = useState<Model | null>(null);
 
   const dialogRef = useRef<HTMLDialogElement>(null);
   const dropdownRef = useRef<HTMLSelectElement>(null);
@@ -49,31 +49,20 @@ function ModelSelectorDialog({
   };
 
   useEffect(() => {
+    setCheckedModel(selectedModel);
+
     if (open) {
       dialogRef?.current?.showModal();
     } else {
       dialogRef?.current?.close();
     }
-  }, [open]);
+  }, [open, forModelCategory]);
 
-  useEffect(() => {
-    setCheckedModel(selectedModel);
-
-    if (!dropdownRef.current) return;
-
-    if (!selectedModel) {
-      dropdownRef.current.value = "no-models";
-      return;
-    }
-
-    dropdownRef.current.value = selectedModel.name;
-    dropdownRef.current.onchange = () => {
-      setCheckedModel(
-        models.find((model) => model.name === dropdownRef.current?.value) ??
-          null
-      );
-    };
-  }, [selectedModel, models]);
+  const onDropDownChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setCheckedModel(
+      models.find((model) => model.name === e.target.value) ?? null
+    );
+  };
 
   return (
     <dialog ref={dialogRef} id="model-select-dialog" onClose={onClose}>
@@ -95,6 +84,8 @@ function ModelSelectorDialog({
           name="model"
           id="model-select"
           autoFocus={true}
+          onChange={onDropDownChange}
+          value={checkedModel?.name || "no-models"}
         >
           {models.map((model) => (
             <option key={model.name} value={model.name}>

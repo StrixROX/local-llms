@@ -1,14 +1,14 @@
 {
-  "model": "deepseek-r1:latest",
+  "model": "deepseek-r1:8b",
   "prompt": "USER_PROMPT",
-  "system": "Identify what kind of request the user is making. You can only choose from: image-generation, video-generation, text-generation. If request type is explicitly mentioned, just return that. Return as JSON",
+  "system": "Identify what kind of request the user is making. You can only choose from: image-generation, video-generation, text-generation. If request type is explicitly mentioned, just return that. You must return a JSON object exactly matching this structure:\n{\n\"requestType\": \"image-generation\" | \"text-generation\" | \"video-generation\"}\n\nRespond with JSON only. Do not include explanations.",
   "format": {
     "type": "object",
     "properties": {
-      "type": {
+      "requestType": {
         "type": "string"
       }
     },
-    "required": ["type"]
+    "required": ["requestType"]
   }
 }

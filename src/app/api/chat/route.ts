@@ -4,7 +4,6 @@ import { createNdjsonReadableStream } from "../utils";
 import { generateResponse, getRequestCategory } from "@/lib/ollama";
 import { generateImages } from "@/lib/huggingface";
 
-
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as {
     textModel: string;
@@ -19,7 +18,7 @@ export async function POST(req: NextRequest) {
   const lastUserMessage =
     [...chatHistory].findLast((m) => m.role === "user")?.content || "";
 
-  const { type: requestType } = await getRequestCategory(lastUserMessage);
+  const { requestType } = await getRequestCategory(lastUserMessage);
 
   let generator;
 
